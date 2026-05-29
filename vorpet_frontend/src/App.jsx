@@ -1130,6 +1130,13 @@ function PDFExportPage({ state, updateState, go }) {
 
   const [examDuration, setExamDuration] = useState(state.examConfig?.totalTime||60)
 
+  // Sync duration when examConfig loads
+  useEffect(() => {
+    if (state.examConfig?.totalTime) {
+      setExamDuration(state.examConfig.totalTime)
+    }
+  }, [state.examConfig?.totalTime])
+
   const buildDirectFD = (includeAnswers=false) => {
     const fd = new FormData()
     const qs = state.questions || {}
