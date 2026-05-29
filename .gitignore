@@ -1,0 +1,9 @@
+﻿node_modules/
+__pycache__/
+*.pyc
+.env
+outputs/
+uploads/
+*.zip
+test.jpg
+vorpet_qgen/static/qr/

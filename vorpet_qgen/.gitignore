@@ -1,0 +1,10 @@
+﻿node_modules/
+__pycache__/
+*.pyc
+.env
+.env.*
+docker-compose.yml
+outputs/*.pdf
+uploads/
+*.zip
+test.jpg

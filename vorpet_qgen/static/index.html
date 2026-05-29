@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Vorpet Question Generator — API Running</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 60px; background: #f5f7ff; }
+    h1 { color: #1a3a6e; }
+    .status { background: #e1f5ee; border: 1px solid #5dcaa5; border-radius: 8px;
+              padding: 16px 24px; display: inline-block; margin: 20px; }
+    code { background: #eee; padding: 2px 8px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <h1>Vorpet Question Paper Generator</h1>
+  <div class="status">✅ API is running</div>
+  <p>Pipeline: <strong>Bhashini OCR → BharatGen LLM → Bhashini Translate → PDF</strong></p>
+  <p>Test API: <a href="/api/health"><code>GET /api/health</code></a></p>
+  <p>Generate: <code>POST /api/generate</code></p>
+  <p><em>React frontend coming next...</em></p>
+</body>
+</html>

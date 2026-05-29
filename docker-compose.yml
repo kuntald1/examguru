@@ -1,0 +1,66 @@
+version: "3.9"
+
+services:
+
+  # ── Ollama ────────────────────────────────────────────────────
+  ollama:
+    image: ollama/ollama:latest
+    container_name: vorpet_ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+
+  # ── Model loader ──────────────────────────────────────────────
+  ollama-init:
+    image: ollama/ollama:latest
+    container_name: vorpet_ollama_init
+    depends_on:
+      - ollama
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+    entrypoint: >
+      /bin/sh -c "
+        sleep 5 &&
+        ollama pull llama3.2:3b &&
+        echo 'Model ready!'
+      "
+
+  # ── FastAPI ───────────────────────────────────────────────────
+  api:
+    build: ./vorpet_qgen
+    container_name: vorpet_api
+    ports:
+      - "8080:8000"
+    depends_on:
+      - ollama
+    environment:
+      - BHASHINI_USER_ID=${BHASHINI_USER_ID}
+      - BHASHINI_API_KEY=${BHASHINI_API_KEY}
+      - BHASHINI_INFERENCE_KEY=${BHASHINI_INFERENCE_KEY}
+      - OLLAMA_URL=http://ollama:11434
+      - BHARATGEN_MODEL=llama3.2:3b
+      - DATABASE_URL=postgresql://vorpeteducation:Education@123@187.127.150.252:5432/vorpeteducationdb
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - EMAIL_HOST=smtp.hostinger.com
+      - EMAIL_PORT=465
+      - EMAIL_USER=info@vorpet.com
+      - EMAIL_PASS=Vorpet@2026
+      - EMAIL_FROM=Vorpet <info@vorpet.com>
+    volumes:
+      - ./vorpet_qgen/uploads:/app/uploads
+      - ./vorpet_qgen/outputs:/app/outputs
+    restart: unless-stopped
+
+  # ── React Frontend ────────────────────────────────────────────
+  frontend:
+    build: ./vorpet_frontend
+    container_name: vorpet_frontend
+    ports:
+      - "3030:5173"
+    restart: unless-stopped
+
+volumes:
+  ollama_data:
