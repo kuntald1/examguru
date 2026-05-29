@@ -1127,6 +1127,8 @@ function PDFExportPage({ state, updateState, go }) {
     p2get("/batch/list").then(d=>setBatches(d.batches||[]))
   },[])
 
+  const [examDuration, setExamDuration] = useState(state.examConfig?.totalTime||60)
+
   const buildDirectFD = (includeAnswers=false) => {
     const fd = new FormData()
     const qs = state.questions || {}
@@ -1140,7 +1142,7 @@ function PDFExportPage({ state, updateState, go }) {
     fd.append("school_name", state.examConfig?.schoolName||"")
     fd.append("class_name", state.examConfig?.className||"")
     fd.append("subject", state.examConfig?.subject||"গণিত")
-    fd.append("duration_minutes", state.examConfig?.totalTime||60)
+    fd.append("duration_minutes", examDuration)
     fd.append("questions_json", JSON.stringify(allSections))
     fd.append("include_answers", includeAnswers ? "1" : "0")
     return fd
@@ -1254,7 +1256,16 @@ function PDFExportPage({ state, updateState, go }) {
 
           {/* ── MAIN ACTION CARD ── */}
           <div className="card">
-            <div className="card-title">📄 Question Paper — {state.examConfig?.subject} · {state.examConfig?.className}</div>
+            <div className="card-title" style={{justifyContent:"space-between",flexWrap:"wrap",gap:12}}>
+              <span>📄 Question Paper — {state.examConfig?.subject} · {state.examConfig?.className}</span>
+              <div style={{display:"flex",alignItems:"center",gap:8,fontSize:13}}>
+                <span style={{color:"var(--muted)"}}>⏱ Exam duration:</span>
+                <input type="number" value={examDuration} onChange={e=>setExamDuration(parseInt(e.target.value)||60)}
+                  style={{width:70,padding:"4px 8px",borderRadius:6,border:"1.5px solid var(--border2)",fontSize:13,textAlign:"center"}}
+                  min="5" max="300"/>
+                <span style={{color:"var(--muted)"}}>min</span>
+              </div>
+            </div>
 
             {/* Exam name + batch row — always visible */}
             <div style={{background:"var(--bg3)",borderRadius:12,padding:16,marginBottom:16,border:"1px solid var(--border)"}}>
@@ -4121,6 +4132,25 @@ export default function App() {
     if(extra.examId !== undefined) setState(s=>({...s,currentExamId:extra.examId}))
     setPage(p)
   },[])
+
+  // Restore login from localStorage on page load/refresh
+  useEffect(() => {
+    const token = getToken()
+    if (token) {
+      fetch("/auth/me", { headers: { Authorization: `Bearer ${token}` } })
+        .then(r => r.json())
+        .then(data => {
+          if (data.institute) {
+            updateState({ user: data.institute, token })
+            if (data.institute.plan === "superadmin") setPage("superadmin")
+            else setPage("dashboard")
+          } else {
+            clearToken()
+          }
+        })
+        .catch(() => clearToken())
+    }
+  }, [])
   const Page = PAGES[page]
   return <Page state={state} updateState={updateState} go={go} />
 }
