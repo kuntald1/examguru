@@ -785,6 +785,7 @@ function ExamConfigPage({ state, updateState, go }) {
     fd.append("marks_1", isOMR ? nq : (patterns[0]?.attempt || 5))
     fd.append("marks_5", isOMR ? 0 : (patterns[patterns.length-1]?.attempt || 2))
     if (!isOMR) fd.append("patterns_json", JSON.stringify(patterns.map(p=>({marks:parseInt(p.marks),total:parseInt(p.total),attempt:parseInt(p.attempt)}))))
+    fd.append("duration_minutes", parseInt(time)||60)
     fd.append("language", lang); fd.append("school_name", school); fd.append("class_name", cls); fd.append("subject", subj)
     try {
       let r = state.uploadedFiles && state.uploadedFiles.length > 0 ? await apiGenerate(fd) : await apiTest(fd)
