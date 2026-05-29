@@ -1,0 +1,31 @@
+﻿version: "3.9"
+
+services:
+  api:
+    build: ./vorpet_qgen
+    container_name: vorpet_api
+    ports:
+      - "8002:8000"
+    environment:
+      - DATABASE_URL=postgresql://vorpeteducation:Education@123@187.127.150.252:5432/vorpeteducationdb
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - EMAIL_HOST=smtp.hostinger.com
+      - EMAIL_PORT=465
+      - EMAIL_USER=info@vorpet.com
+      - EMAIL_PASS=${EMAIL_PASS}
+      - EMAIL_FROM=Vorpet <info@vorpet.com>
+    volumes:
+      - ./vorpet_qgen/uploads:/app/uploads
+      - ./vorpet_qgen/outputs:/app/outputs
+      - ./vorpet_qgen/static:/app/static
+    restart: unless-stopped
+
+  frontend:
+    build: ./vorpet_frontend
+    container_name: vorpet_frontend
+    ports:
+      - "3030:5173"
+    depends_on:
+      - api
+    restart: unless-stopped
