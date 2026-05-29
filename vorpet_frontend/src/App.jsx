@@ -851,6 +851,10 @@ function ExamConfigPage({ state, updateState, go }) {
               </div>
             </div>
             <div style={{ marginTop: 12 }}><label>Subject</label><input value={subj} onChange={e => setSubj(e.target.value)} placeholder="গণিত" /></div>
+              <div style={{ marginTop: 12 }}>
+                <label>Time (minutes)</label>
+                <input type="number" value={time} onChange={e => setTime(e.target.value)} placeholder="60" min="5" max="300" style={{maxWidth:200}} />
+              </div>
           </div>
           {isOMR && (
             <div className="card">
@@ -1150,7 +1154,7 @@ function PDFExportPage({ state, updateState, go }) {
     fd.append("school_name", state.examConfig?.schoolName||"")
     fd.append("class_name", state.examConfig?.className||"")
     fd.append("subject", state.examConfig?.subject||"গণিত")
-    fd.append("duration_minutes", examDuration)
+    fd.append("duration_minutes", state.examConfig?.totalTime || 60)
     fd.append("questions_json", JSON.stringify(allSections))
     fd.append("include_answers", includeAnswers ? "1" : "0")
     return fd
@@ -1267,11 +1271,7 @@ function PDFExportPage({ state, updateState, go }) {
             <div className="card-title" style={{justifyContent:"space-between",flexWrap:"wrap",gap:12}}>
               <span>📄 Question Paper — {state.examConfig?.subject} · {state.examConfig?.className}</span>
               <div style={{display:"flex",alignItems:"center",gap:8,fontSize:13}}>
-                <span style={{color:"var(--muted)"}}>⏱ Exam duration:</span>
-                <input type="number" value={examDuration} onChange={e=>setExamDuration(parseInt(e.target.value)||60)}
-                  style={{width:70,padding:"4px 8px",borderRadius:6,border:"1.5px solid var(--border2)",fontSize:13,textAlign:"center"}}
-                  min="5" max="300"/>
-                <span style={{color:"var(--muted)"}}>min</span>
+                
               </div>
             </div>
 

@@ -65,9 +65,11 @@ async def generate(
     class_name:  str  = Form("Class VIII"),
     subject:     str  = Form("গণিত"),
     patterns_json: str = Form(""),   # JSON string of pattern array
+    duration_minutes: int = Form(90),
 ):
     job_id = str(uuid.uuid4())[:8]
     paths  = []
+    print(f'GENERATE duration_minutes={duration_minutes}', flush=True)
 
     # Parse patterns
     patterns = None
@@ -95,6 +97,7 @@ async def generate(
     # ─────────────────────────────────────────────────────────
     job_id = str(uuid.uuid4())[:8]
     paths  = []
+    print(f'GENERATE duration_minutes={duration_minutes}', flush=True)
 
     # Save uploaded images
     for img in images:
@@ -130,7 +133,7 @@ async def generate(
         # Step 4 — PDF
         pdf_path = await generate_pdf(
             questions, school_name, class_name, subject, language, job_id,
-            duration_minutes=90
+            duration_minutes=duration_minutes
         )
 
         # ── Phase 3: Record usage ─────────────────────────────
@@ -188,6 +191,7 @@ async def pdf_direct(
     """Generate PDF directly from provided questions — NO LLM call, fast!
     If include_answers=1, calls LLM to generate answers and includes them."""
     job_id = str(uuid.uuid4())[:8]
+    print(f"PDFDIRECT dur={duration_minutes}", flush=True)
     try:
         raw = json.loads(questions_json)
     except Exception:
@@ -307,7 +311,8 @@ Return ONLY valid JSON. Keys must be "Q1", "Q2" etc:
             print(f"[Answer generation] Failed: {e}")
 
     pdf_path = await generate_pdf(
-        questions, school_name, class_name, subject, language, job_id
+        questions, school_name, class_name, subject, language, job_id,
+        duration_minutes=duration_minutes
     )
     return JSONResponse({
         "success": True,
@@ -450,3 +455,7 @@ async def test_pipeline(
 
 if __name__ == "__main__":
     uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
+
+@app.post('/api/debug-duration')
+async def debug_duration(duration_minutes: int = Form(90)):
+    return {'received': duration_minutes}
