@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite'
+﻿import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 export default defineConfig({
@@ -6,6 +6,7 @@ export default defineConfig({
   server: {
     port: 5173,
     host: '0.0.0.0',
+    allowedHosts: ['examguru.duckdns.org', 'localhost', '187.127.150.252'],
     proxy: {
       '/api':        { target: 'http://vorpet_api:8000', changeOrigin: true },
       '/auth':       { target: 'http://vorpet_api:8000', changeOrigin: true },
