@@ -188,8 +188,8 @@ function Sidebar({ page, go, user }) {
   return (
     <div className="sidebar">
       <div className="logo">
-        <div className="logo-mark">Vor<span>pet</span></div>
-        <div className="logo-sub">OMR · Question System</div>
+        <div className="logo-mark">Exam<span>Guru</span></div>
+        <div className="logo-sub">ExamGuru · AI Exams</div>
       </div>
       {nav.map(n => (
         <div key={n.id}
@@ -265,8 +265,8 @@ function LoginPage({ go, updateState }) {
       <div className="login-card">
         <div className="login-logo">
           <div style={{ fontSize: 48, marginBottom: 8 }}>📋</div>
-          <div className="login-logo-mark">Vor<span style={{ color: "var(--accent2)" }}>pet</span></div>
-          <div className="login-logo-sub">Online OMR & Question Management</div>
+          <div className="login-logo-mark">Exam<span style={{ color: "var(--accent2)" }}>Guru</span></div>
+          <div className="login-logo-sub">AI-Powered Exam & Question Management</div>
         </div>
         <div className="login-title">Good morning! 👋</div>
         <div className="login-sub">Sign in to your account to continue</div>
@@ -1085,9 +1085,9 @@ function QuestionEditorPage({ state, updateState, go }) {
 const API2 = ""
 
 // Token storage helpers
-const getToken = () => sessionStorage.getItem("vorpet_token")
-const setToken = (t) => sessionStorage.setItem("vorpet_token", t)
-const clearToken = () => sessionStorage.removeItem("vorpet_token")
+const getToken = () => localStorage.getItem("vorpet_token")
+const setToken = (t) => localStorage.setItem("vorpet_token", t)
+const clearToken = () => localStorage.removeItem("vorpet_token")
 
 const authHeaders = () => {
   const t = getToken()
@@ -1140,6 +1140,7 @@ function PDFExportPage({ state, updateState, go }) {
     fd.append("school_name", state.examConfig?.schoolName||"")
     fd.append("class_name", state.examConfig?.className||"")
     fd.append("subject", state.examConfig?.subject||"গণিত")
+    fd.append("duration_minutes", state.examConfig?.totalTime||60)
     fd.append("questions_json", JSON.stringify(allSections))
     fd.append("include_answers", includeAnswers ? "1" : "0")
     return fd
@@ -2779,7 +2780,7 @@ function StudentExamPage({ state, updateState, go }) {
       <div style={{background:"#fff",borderRadius:20,padding:40,width:"100%",maxWidth:420,boxShadow:"0 8px 40px rgba(46,125,50,0.12)",border:"1px solid var(--border)"}}>
         <div style={{textAlign:"center",marginBottom:28}}>
           <div style={{fontSize:48,marginBottom:8}}>📋</div>
-          <div style={{fontSize:22,fontWeight:700}}>Vor<span style={{color:"var(--accent2)"}}>pet</span></div>
+          <div style={{fontSize:22,fontWeight:700}}>Exam<span style={{color:"var(--accent2)"}}>Guru</span></div>
           <div style={{fontSize:13,color:"var(--muted)",marginTop:4}}>Student Exam Portal</div>
         </div>
         {error&&<div className="alert alert-error">⚠ {error}</div>}
@@ -3662,7 +3663,7 @@ This gives them a fresh quota for the current month.`,
         display:"flex", alignItems:"center", justifyContent:"space-between", boxShadow:"0 2px 8px rgba(0,0,0,0.15)" }}>
         <div style={{ display:"flex", alignItems:"center", gap:12 }}>
           <span style={{ fontSize:22 }}>🛡️</span>
-          <span style={{ fontWeight:700, fontSize:18 }}>Vorpet Superadmin</span>
+          <span style={{ fontWeight:700, fontSize:18 }}>ExamGuru Superadmin</span>
           <span style={{ fontSize:12, opacity:0.7, marginLeft:4 }}>Platform Control Panel</span>
         </div>
         <button className="btn" style={{ background:"rgba(255,255,255,0.15)", color:"#fff", border:"1px solid rgba(255,255,255,0.3)" }}

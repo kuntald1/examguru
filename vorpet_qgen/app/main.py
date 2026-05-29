@@ -129,7 +129,8 @@ async def generate(
 
         # Step 4 — PDF
         pdf_path = await generate_pdf(
-            questions, school_name, class_name, subject, language, job_id
+            questions, school_name, class_name, subject, language, job_id,
+            duration_minutes=90
         )
 
         # ── Phase 3: Record usage ─────────────────────────────
@@ -176,12 +177,13 @@ async def get_usage(request: Request):
 
 @app.post("/api/pdf-direct")
 async def pdf_direct(
-    language:       str = Form("bengali"),
-    school_name:    str = Form(""),
-    class_name:     str = Form("Class VIII"),
-    subject:        str = Form("গণিত"),
-    questions_json: str = Form("{}"),
+    language:        str = Form("bengali"),
+    school_name:     str = Form(""),
+    class_name:      str = Form("Class VIII"),
+    subject:         str = Form("গণিত"),
+    questions_json:  str = Form("{}"),
     include_answers: str = Form("0"),
+    duration_minutes: int = Form(90),
 ):
     """Generate PDF directly from provided questions — NO LLM call, fast!
     If include_answers=1, calls LLM to generate answers and includes them."""
@@ -435,7 +437,8 @@ async def test_pipeline(
         questions = await translate_questions(questions, language)
 
     pdf_path = await generate_pdf(
-        questions, school_name, class_name, subject, language, job_id
+        questions, school_name, class_name, subject, language, job_id,
+        duration_minutes=duration_minutes
     )
 
     return JSONResponse({

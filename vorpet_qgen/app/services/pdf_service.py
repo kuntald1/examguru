@@ -63,13 +63,42 @@ def _convert_math(text: str) -> str:
 
 async def generate_pdf(questions: dict, school_name: str,
                        class_name: str, subject: str,
-                       language: str, job_id: str) -> str:
+                       language: str, job_id: str,
+                       duration_minutes: int = 90) -> str:
 
     from weasyprint import HTML
     from weasyprint.text.fonts import FontConfiguration
 
     today  = datetime.date.today().strftime("%d/%m/%Y")
     school = school_name or "বিদ্যালয়ের নাম"
+
+    # Format duration nicely
+    def format_duration(mins: int, lang: str) -> str:
+        hrs  = mins // 60
+        rem  = mins % 60
+        if lang == "bengali":
+            if hrs > 0 and rem > 0:
+                return f"{hrs} ঘণ্টা {rem} মিনিট"
+            elif hrs > 0:
+                return f"{hrs} ঘণ্টা"
+            else:
+                return f"{rem} মিনিট"
+        elif lang == "hindi":
+            if hrs > 0 and rem > 0:
+                return f"{hrs} घंटे {rem} मिनट"
+            elif hrs > 0:
+                return f"{hrs} घंटे"
+            else:
+                return f"{rem} मिनट"
+        else:
+            if hrs > 0 and rem > 0:
+                return f"{hrs}h {rem}min"
+            elif hrs > 0:
+                return f"{hrs} hour{'s' if hrs>1 else ''}"
+            else:
+                return f"{rem} minutes"
+
+    time_str = format_duration(duration_minutes, language)
 
     # Collect all sections sorted by marks
     section_keys = sorted(
@@ -209,7 +238,7 @@ async def generate_pdf(questions: dict, school_name: str,
         '<span>শ্রেণি: ' + class_name + '</span>'
         '<span>তারিখ: ' + today + '</span>'
         '<span>পূর্ণমান: ' + str(total) + '</span>'
-        '<span>সময়: ১ ঘণ্টা ৩০ মিনিট</span>'
+        '<span>সময়: ' + time_str + '</span>'
         '</div></div>'
         '<div class="instr">নির্দেশাবলী: ' + instr_line + '</div>'
         + sections_html +
