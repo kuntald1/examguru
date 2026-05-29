@@ -73,23 +73,33 @@ async def generate_pdf(questions: dict, school_name: str,
     school = school_name or "বিদ্যালয়ের নাম"
 
     # Format duration nicely
+    def to_bengali_num(n):
+        """Convert ASCII digits to Bengali numerals"""
+        bn = str.maketrans('0123456789', '০১২৩৪৫৬৭৮৯')
+        return str(n).translate(bn)
+
+    def to_hindi_num(n):
+        """Convert ASCII digits to Hindi/Devanagari numerals"""
+        hn = str.maketrans('0123456789', '०१२३४५६७८९')
+        return str(n).translate(hn)
+
     def format_duration(mins: int, lang: str) -> str:
         hrs  = mins // 60
         rem  = mins % 60
         if lang == "bengali":
             if hrs > 0 and rem > 0:
-                return f"{hrs} ঘণ্টা {rem} মিনিট"
+                return f"{to_bengali_num(hrs)} ঘণ্টা {to_bengali_num(rem)} মিনিট"
             elif hrs > 0:
-                return f"{hrs} ঘণ্টা"
+                return f"{to_bengali_num(hrs)} ঘণ্টা"
             else:
-                return f"{rem} মিনিট"
+                return f"{to_bengali_num(rem)} মিনিট"
         elif lang == "hindi":
             if hrs > 0 and rem > 0:
-                return f"{hrs} घंटे {rem} मिनट"
+                return f"{to_hindi_num(hrs)} घंटे {to_hindi_num(rem)} मिनट"
             elif hrs > 0:
-                return f"{hrs} घंटे"
+                return f"{to_hindi_num(hrs)} घंटे"
             else:
-                return f"{rem} मिनट"
+                return f"{to_hindi_num(rem)} मिनट"
         else:
             if hrs > 0 and rem > 0:
                 return f"{hrs}h {rem}min"
