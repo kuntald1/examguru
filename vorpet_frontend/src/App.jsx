@@ -2701,7 +2701,12 @@ function StudentExamPage({ state, updateState, go }) {
   const timerRef = useRef(null)
   const examRef = useRef(null)
 
-  useEffect(()=>{ p2get("/batch/list").then(d=>setBatches(d.batches||[])) },[])
+  useEffect(()=>{ 
+    fetch("/api/v2/public/batches")
+      .then(r=>r.json())
+      .then(d=>setBatches(d.batches||[]))
+      .catch(()=>setBatches([]))
+  },[])
 
   // Security events during exam
   useEffect(()=>{

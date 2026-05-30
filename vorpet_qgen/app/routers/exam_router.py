@@ -727,6 +727,24 @@ async def api_get_exam_batches(exam_id: int, institute: dict = Depends(get_curre
 # STUDENT PORTAL — BATCH LOGIN + EXAM LIST
 # ═══════════════════════════════════════════════════════════════
 
+@router.get("/public/batches")
+async def api_public_batch_list(institute_id: int = None):
+    """Public endpoint — returns batch names for student login dropdown"""
+    from app.services.db_service import database
+    try:
+        if institute_id:
+            rows = await database.fetch_all(
+                "SELECT id, name FROM batches WHERE institute_id = :iid ORDER BY name",
+                {"iid": institute_id}
+            )
+        else:
+            rows = await database.fetch_all(
+                "SELECT id, name FROM batches ORDER BY name"
+            )
+        return {"batches": [dict(r) for r in rows]}
+    except Exception as e:
+        return {"batches": []}
+
 @router.post("/student/login")
 async def api_student_login(payload: StudentLoginIn):
     """Student logs in with roll no + batch + password"""
