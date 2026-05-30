@@ -4,16 +4,16 @@ const CSS = `
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --bg:       #F0F7EE;
+    --bg:       #F8F7FF;
     --bg2:      #FFFFFF;
-    --bg3:      #F5FAF3;
-    --border:   #DFF0DA;
-    --border2:  #C8E6C0;
+    --bg3:      #FAF5FF;
+    --border:   #EDE9FE;
+    --border2:  #DDD6FE;
     --text:     #1A2E1A;
     --muted:    #6B8F6B;
-    --accent:   #4CAF50;
-    --accent2:  #2E7D32;
-    --light:    #E8F5E9;
+    --accent:   #7C3AED;
+    --accent2:  #5B21B6;
+    --light:    #F5F3FF;
     --yellow:   #FDD835;
     --yellow2:  #F9A825;
     --success:  #43A047;
@@ -30,25 +30,25 @@ const CSS = `
   ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
 
   .shell { display: flex; min-height: 100vh; }
-  .sidebar { width: 200px; flex-shrink: 0; background: var(--bg2); border-right: 1px solid var(--border); padding: 24px 0; display: flex; flex-direction: column; box-shadow: 2px 0 8px rgba(0,0,0,0.04); }
+  .sidebar { width: 200px; flex-shrink: 0; background: linear-gradient(180deg, #5b21b6 0%, #7c3aed 100%); border-right: none; padding: 24px 0; display: flex; flex-direction: column; box-shadow: 2px 0 8px rgba(0,0,0,0.04); }
   .main { flex: 1; overflow-y: auto; background: var(--bg); }
   .page { padding: 28px 32px; }
 
-  .logo { padding: 0 20px 20px; border-bottom: 1px solid var(--border); margin-bottom: 12px; }
-  .logo-mark { font-size: 20px; font-weight: 700; color: var(--text); letter-spacing: -0.5px; }
-  .logo-mark span { color: var(--accent2); }
-  .logo-sub { font-size: 10px; color: var(--muted); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .logo { padding: 0 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.15); margin-bottom: 12px; }
+  .logo-mark { font-size: 20px; font-weight: 700; color: #fff; letter-spacing: -0.5px; }
+  .logo-mark span { color: #c4b5fd; }
+  .logo-sub { font-size: 10px; color: rgba(255,255,255,0.5); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.05em; }
 
-  .nav-item { display: flex; align-items: center; gap: 9px; padding: 9px 20px; font-size: 13px; color: var(--muted); cursor: pointer; transition: all 0.15s; border-radius: 0; font-weight: 500; }
-  .nav-item:hover { color: var(--accent2); background: var(--light); }
-  .nav-item.active { color: var(--accent2); background: var(--light); border-left: 3px solid var(--accent); font-weight: 600; }
+  .nav-item { display: flex; align-items: center; gap: 9px; padding: 9px 20px; font-size: 13px; color: rgba(255,255,255,0.65); cursor: pointer; transition: all 0.15s; border-radius: 0; font-weight: 500; }
+  .nav-item:hover { color: #fff; background: rgba(255,255,255,0.1); }
+  .nav-item.active { color: #fff; background: rgba(255,255,255,0.15); border-left: 3px solid #c4b5fd; font-weight: 600; }
   .nav-icon { font-size: 14px; width: 18px; text-align: center; }
 
-  .sidebar-bottom { margin-top: auto; padding: 16px 20px; border-top: 1px solid var(--border); }
+  .sidebar-bottom { margin-top: auto; padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.15); }
   .user-chip { display: flex; align-items: center; gap: 10px; }
-  .user-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #fff; }
-  .user-name { font-size: 13px; font-weight: 600; color: var(--text); }
-  .user-role { font-size: 11px; color: var(--muted); }
+  .user-avatar { width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #fff; }
+  .user-name { font-size: 13px; font-weight: 600; color: #fff; }
+  .user-role { font-size: 11px; color: rgba(255,255,255,0.55); }
 
   .steps { display: flex; align-items: center; margin-bottom: 24px; background: var(--bg2); border-radius: 12px; padding: 14px 20px; border: 1px solid var(--border); box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
   .step { display: flex; align-items: center; gap: 8px; }
@@ -74,7 +74,7 @@ const CSS = `
   .field-error { font-size: 11px; color: var(--danger); margin-top: 5px; font-weight: 500; }
 
   .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 10px; font-family: var(--font); font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; }
-  .btn-primary { background: var(--accent2); color: #fff; }
+  .btn-primary { background: linear-gradient(135deg, #5b21b6, #7c3aed); color: #fff; }
   .btn-primary:hover { background: #1B5E20; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(46,125,50,0.3); }
   .btn-secondary { background: var(--bg3); color: var(--text); border: 1.5px solid var(--border2); }
   .btn-secondary:hover { border-color: var(--accent); color: var(--accent2); }
@@ -87,8 +87,8 @@ const CSS = `
 
   .choice-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 18px; }
   .choice-card { background: var(--bg3); border: 2px solid var(--border); border-radius: 14px; padding: 18px; cursor: pointer; transition: all 0.2s; text-align: center; }
-  .choice-card:hover { border-color: var(--accent); background: var(--light); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(76,175,80,0.15); }
-  .choice-card.selected { border-color: var(--accent2); background: var(--light); box-shadow: 0 4px 12px rgba(46,125,50,0.15); }
+  .choice-card:hover { border-color: var(--accent); background: var(--light); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(124,58,237,0.15); }
+  .choice-card.selected { border-color: var(--accent2); background: var(--light); box-shadow: 0 4px 12px rgba(91,33,182,0.15); }
   .choice-icon { font-size: 28px; margin-bottom: 10px; }
   .choice-title { font-size: 13px; font-weight: 700; margin-bottom: 4px; color: var(--text); }
   .choice-desc { font-size: 11px; color: var(--muted); line-height: 1.5; }
@@ -129,7 +129,7 @@ const CSS = `
   .pdf-name { font-size: 13px; font-weight: 700; margin-bottom: 3px; color: var(--text); }
   .pdf-meta { font-size: 11px; color: var(--muted); }
 
-  .login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #E8F5E9 0%, #F0F7EE 50%, #DCEDC8 100%); }
+  .login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #5b21b6 0%, #7c3aed 50%, #6d28d9 100%); }
   .login-card { background: #fff; border-radius: 20px; padding: 40px; width: 100%; max-width: 400px; box-shadow: 0 8px 40px rgba(46,125,50,0.12); border: 1px solid var(--border); }
   .login-logo { text-align: center; margin-bottom: 28px; }
   .login-logo-mark { font-size: 24px; font-weight: 700; color: var(--text); }
@@ -265,7 +265,7 @@ function LoginPage({ go, updateState }) {
       <div className="login-card">
         <div className="login-logo">
           <div style={{ fontSize: 48, marginBottom: 8 }}>📋</div>
-          <div className="login-logo-mark">Exam<span style={{ color: "var(--accent2)" }}>Guru</span></div>
+          <div className="login-logo-mark">Exam<span style={{ color: "#7c3aed" }}>Guru</span></div>
           <div className="login-logo-sub">AI-Powered Exam & Question Management</div>
         </div>
         <div className="login-title">Good morning! 👋</div>
@@ -851,10 +851,12 @@ function ExamConfigPage({ state, updateState, go }) {
               </div>
             </div>
             <div style={{ marginTop: 12 }}><label>Subject</label><input value={subj} onChange={e => setSubj(e.target.value)} placeholder="গণিত" /></div>
-              <div style={{ marginTop: 12 }}>
+            {!isOMR && (
+              <div style={{ marginTop: 12, maxWidth: 200 }}>
                 <label>Time (minutes)</label>
-                <input type="number" value={time} onChange={e => setTime(e.target.value)} placeholder="60" min="5" max="300" style={{maxWidth:200}} />
+                <input type="number" value={time} onChange={e => setTime(e.target.value)} placeholder="60" min="5" max="300" />
               </div>
+            )}
           </div>
           {isOMR && (
             <div className="card">
@@ -1154,7 +1156,7 @@ function PDFExportPage({ state, updateState, go }) {
     fd.append("school_name", state.examConfig?.schoolName||"")
     fd.append("class_name", state.examConfig?.className||"")
     fd.append("subject", state.examConfig?.subject||"গণিত")
-    fd.append("duration_minutes", state.examConfig?.totalTime || 60)
+    fd.append("duration_minutes", examDuration)
     fd.append("questions_json", JSON.stringify(allSections))
     fd.append("include_answers", includeAnswers ? "1" : "0")
     return fd
@@ -1271,7 +1273,11 @@ function PDFExportPage({ state, updateState, go }) {
             <div className="card-title" style={{justifyContent:"space-between",flexWrap:"wrap",gap:12}}>
               <span>📄 Question Paper — {state.examConfig?.subject} · {state.examConfig?.className}</span>
               <div style={{display:"flex",alignItems:"center",gap:8,fontSize:13}}>
-                
+                <span style={{color:"var(--muted)"}}>⏱ Exam duration:</span>
+                <input type="number" value={examDuration} onChange={e=>setExamDuration(parseInt(e.target.value)||60)}
+                  style={{width:70,padding:"4px 8px",borderRadius:6,border:"1.5px solid var(--border2)",fontSize:13,textAlign:"center"}}
+                  min="5" max="300"/>
+                <span style={{color:"var(--muted)"}}>min</span>
               </div>
             </div>
 
