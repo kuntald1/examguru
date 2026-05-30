@@ -129,7 +129,7 @@ const CSS = `
   .pdf-name { font-size: 13px; font-weight: 700; margin-bottom: 3px; color: var(--text); }
   .pdf-meta { font-size: 11px; color: var(--muted); }
 
-  .login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #5b21b6 0%, #7c3aed 50%, #6d28d9 100%); }
+  .login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 50%, #e9d5ff 100%); }
   .login-card { background: #fff; border-radius: 20px; padding: 40px; width: 100%; max-width: 400px; box-shadow: 0 8px 40px rgba(46,125,50,0.12); border: 1px solid var(--border); }
   .login-logo { text-align: center; margin-bottom: 28px; }
   .login-logo-mark { font-size: 24px; font-weight: 700; color: var(--text); }
@@ -268,9 +268,7 @@ function LoginPage({ go, updateState }) {
           <div className="login-logo-mark">Exam<span style={{ color: "#7c3aed" }}>Guru</span></div>
           <div className="login-logo-sub">AI-Powered Exam & Question Management</div>
         </div>
-        <div className="login-title">Good morning! 👋</div>
-        <div className="login-sub">Sign in to your account to continue</div>
-        {error && <div className="alert alert-error">⚠ {error}</div>}
+                {error && <div className="alert alert-error">⚠ {error}</div>}
         <div className="form-group">
           <label>Email address</label>
           <input type="email" value={email} onChange={e => setEmail(e.target.value)} onKeyDown={e => e.key === "Enter" && login()} />
