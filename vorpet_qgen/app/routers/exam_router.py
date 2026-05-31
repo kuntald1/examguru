@@ -497,7 +497,7 @@ async def api_public_exam_results(exam_id: int):
     rows = await database.fetch_all("""
         SELECT ea.id as exam_access_id, s.name as student_name,
                er.marks_obtained, er.total_marks, er.percentage,
-               er.correct_answers, er.wrong_answers, er.skipped,
+               er.total_correct, er.total_wrong, er.total_skipped,
                er.time_taken_seconds, er.submitted_at, er.auto_submitted
         FROM exam_access ea
         JOIN students s ON s.id = ea.student_id
