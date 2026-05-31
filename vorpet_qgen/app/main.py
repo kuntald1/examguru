@@ -65,11 +65,9 @@ async def generate(
     class_name:  str  = Form("Class VIII"),
     subject:     str  = Form("গণিত"),
     patterns_json: str = Form(""),   # JSON string of pattern array
-    duration_minutes: int = Form(90),
 ):
     job_id = str(uuid.uuid4())[:8]
     paths  = []
-    print(f'GENERATE duration_minutes={duration_minutes}', flush=True)
 
     # Parse patterns
     patterns = None
@@ -97,7 +95,6 @@ async def generate(
     # ─────────────────────────────────────────────────────────
     job_id = str(uuid.uuid4())[:8]
     paths  = []
-    print(f'GENERATE duration_minutes={duration_minutes}', flush=True)
 
     # Save uploaded images
     for img in images:
@@ -133,7 +130,7 @@ async def generate(
         # Step 4 — PDF
         pdf_path = await generate_pdf(
             questions, school_name, class_name, subject, language, job_id,
-            duration_minutes=duration_minutes
+            duration_minutes=90
         )
 
         # ── Phase 3: Record usage ─────────────────────────────
@@ -191,7 +188,6 @@ async def pdf_direct(
     """Generate PDF directly from provided questions — NO LLM call, fast!
     If include_answers=1, calls LLM to generate answers and includes them."""
     job_id = str(uuid.uuid4())[:8]
-    print(f"PDFDIRECT dur={duration_minutes}", flush=True)
     try:
         raw = json.loads(questions_json)
     except Exception:
@@ -311,8 +307,7 @@ Return ONLY valid JSON. Keys must be "Q1", "Q2" etc:
             print(f"[Answer generation] Failed: {e}")
 
     pdf_path = await generate_pdf(
-        questions, school_name, class_name, subject, language, job_id,
-        duration_minutes=duration_minutes
+        questions, school_name, class_name, subject, language, job_id
     )
     return JSONResponse({
         "success": True,
@@ -325,30 +320,34 @@ async def generate_mcq_options(
     question_text: str = Form(...),
     language: str = Form("bengali"),
 ):
-    """Generate MCQ options using Claude Haiku — accurate math, preserves Bengali"""
+    """Generate MCQ options using Claude Haiku — works for math and general questions"""
     import anthropic as _anthropic
     import json as _json, re
 
     client = _anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
-    prompt = f"""You are an expert math teacher. Solve this problem and create MCQ options.
+    lang_map = {
+        "bengali": "Bengali (বাংলা)", "hindi": "Hindi (हिंदी)",
+        "english": "English", "tamil": "Tamil (தமிழ்)",
+    }
+    lang_name = lang_map.get(language, "Bengali (বাংলা)")
 
-Question: {question_text}
+    prompt = f"""You are an expert teacher. Create 4 MCQ options for this question.
+
+Question ({lang_name}): {question_text}
 
 Instructions:
-1. Solve the math problem to get the EXACT correct answer
-2. Use algebraic identities if needed:
-   - If a + 1/a = n → a² + 1/a² = n² - 2
-   - If a - 1/a = n → a² + 1/a² = n² + 2
-   - (a+b)² = a² + 2ab + b²
-   - (a-b)² = a² - 2ab + b²
-   - (a+b)(a-b) = a² - b²
-3. Create 3 wrong options close to correct answer (±2, ±4, ±6)
-4. Place correct answer randomly as A, B, C, or D
-5. Return ONLY JSON, no explanation
+1. Read the question carefully — it may be math, science, geography, history, or any subject
+2. Find/calculate the correct answer
+3. Create 3 plausible but wrong options
+4. For math: use nearby numbers as wrong options
+5. For general/descriptive: use related but incorrect facts as wrong options  
+6. Write ALL options in {lang_name} language
+7. Place correct answer randomly as A, B, C, or D
+8. Return ONLY valid JSON, no explanation
 
-JSON format:
-{{"correct_value": "21", "option_a": "19", "option_b": "21", "option_c": "23", "option_d": "25", "correct_answer": "B"}}"""
+JSON format (write options in {lang_name}):
+{{"correct_value": "correct answer text", "option_a": "option text", "option_b": "option text", "option_c": "option text", "option_d": "option text", "correct_answer": "B"}}"""
 
     try:
         response = client.messages.create(
@@ -455,7 +454,3 @@ async def test_pipeline(
 
 if __name__ == "__main__":
     uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
-
-@app.post('/api/debug-duration')
-async def debug_duration(duration_minutes: int = Form(90)):
-    return {'received': duration_minutes}
