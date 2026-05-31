@@ -2752,8 +2752,8 @@ function StudentExamPage({ state, updateState, go }) {
     if(res.already_submitted){
       // Load rank list and detailed result
       const [rankRes, detailRes] = await Promise.all([
-        p2get(`/results/${examId}`),
-        p2get(`/student/${studentData.student.id}/result/${examId}`)
+        fetch(`/api/v2/public/results/${examId}`).then(r=>r.json()),
+        fetch(`/api/v2/student/${studentData.student.id}/result/${examId}`).then(r=>r.json())
       ])
       setRankList(rankRes.results||[])
       setResult(detailRes.result)
@@ -2789,14 +2789,14 @@ function StudentExamPage({ state, updateState, go }) {
     setResult(res.result)
     // Load rank list
     try {
-      const rankRes = await p2get(`/results/${examData.exam.id}`)
+      const rankRes = await fetch(`/api/v2/public/results/${examData.exam.id}`).then(r=>r.json())
       setRankList(rankRes.results||[])
     } catch {}
     setPhase("rankList")
     setSubmitting(false)
     // Fetch detailed responses
     try {
-      const detail = await p2get(`/student/${studentData.student.id}/result/${examData.exam.id}`)
+      const detail = await fetch(`/api/v2/student/${studentData.student.id}/result/${examData.exam.id}`).then(r=>r.json())
       setResultDetail(detail.responses||[])
     } catch {}
   }

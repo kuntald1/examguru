@@ -490,6 +490,23 @@ async def api_security_event(payload: SecurityEventIn):
 # ADMIN — RESULTS DASHBOARD
 # ═══════════════════════════════════════════════════════════════
 
+@router.get("/public/results/{exam_id}")
+async def api_public_exam_results(exam_id: int):
+    """Public endpoint — rank list for student portal after exam submission"""
+    from app.services.db_service import database
+    rows = await database.fetch_all("""
+        SELECT ea.id as exam_access_id, s.name as student_name,
+               er.marks_obtained, er.total_marks, er.percentage,
+               er.correct_answers, er.wrong_answers, er.skipped,
+               er.time_taken_seconds, er.submitted_at, er.auto_submitted
+        FROM exam_access ea
+        JOIN students s ON s.id = ea.student_id
+        LEFT JOIN exam_results er ON er.exam_access_id = ea.id
+        WHERE ea.exam_id = :eid AND er.id IS NOT NULL
+        ORDER BY er.marks_obtained DESC, er.time_taken_seconds ASC
+    """, values={"eid": exam_id})
+    return JSONResponse({"results": safe_list(rows)})
+
 @router.get("/results/{exam_id}")
 async def api_exam_results(exam_id: int, institute: dict = Depends(get_current_institute)):
     """Admin — full results for an exam with batch info"""
