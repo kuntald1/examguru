@@ -1188,6 +1188,7 @@ function PDFExportPage({ state, updateState, go }) {
       const cfg = state.examConfig || {}
       const qs = state.questions || {}
       const allQ = [...(qs.marks_1_questions||[]), ...(qs.marks_5_questions||[])]
+        .filter(q => q.question && q.question.trim().length > 0)
 
       if(!allQ.length) { setMsg("⚠ No questions to save"); setSaving(false); return }
 
@@ -1439,10 +1440,11 @@ function ExamDetailPage({ state, go }) {
   const load = async () => {
     setLoading(true)
     const [full, bd] = await Promise.all([p2get(`/exam/${examId}/full`), p2get("/batch/list")])
-    setExam(full.exam); setQuestions(full.questions||[]); setAssignedBatches(full.assigned_batches||[])
+    const validQs = (full.questions||[]).filter(q => q.question_text && q.question_text.trim().length > 0)
+    setExam(full.exam); setQuestions(validQs); setAssignedBatches(full.assigned_batches||[])
     setBatches(bd.batches||[])
     const e = {}
-    full.questions?.forEach(q=>{ e[q.id]={...q} })
+    validQs?.forEach(q=>{ e[q.id]={...q} })
     setEdits(e)
     setLoading(false)
   }
@@ -1480,7 +1482,7 @@ function ExamDetailPage({ state, go }) {
         }
         setEdits(e=>({...e,[qid]:updated}))
         await fetch(`/api/v2/question/${qid}`, {
-          method:"PUT", headers:{"Content-Type":"application/json"},
+          method:"PUT", headers:authHeaders(),
           body: JSON.stringify({
             option_a: updated.option_a, option_b: updated.option_b,
             option_c: updated.option_c, option_d: updated.option_d,
