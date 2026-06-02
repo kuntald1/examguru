@@ -42,8 +42,14 @@ app.include_router(superadmin_router)
 # ── Phase 4: Billing + Export ─────────────────────────────────
 from app.routers.billing_router import router as billing_router
 from app.routers.export_router  import router as export_router
+from app.routers.teacher_router import router as teacher_router
+from app.routers.call_router    import router as call_router
+from app.routers.notify_router  import router as notify_router
 app.include_router(billing_router)
 app.include_router(export_router)
+app.include_router(teacher_router)
+app.include_router(call_router)
+app.include_router(notify_router)
 # ─────────────────────────────────────────────────────────────
 
 app.mount("/outputs", StaticFiles(directory="outputs"), name="outputs")

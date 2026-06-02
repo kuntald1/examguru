@@ -73,3 +73,42 @@ async def get_superadmin(
             detail="Superadmin access required",
         )
     return institute
+
+
+# ── Teacher guard ─────────────────────────────────────────────────────────────
+
+async def get_current_teacher(
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+) -> dict:
+    """
+    Dependency — injects authenticated teacher into protected endpoints.
+    Reads JWT with role=teacher.
+    """
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Teacher login required",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    if not credentials:
+        raise credentials_exception
+
+    payload = decode_token(credentials.credentials)
+    if not payload or payload.get("role") != "teacher":
+        raise credentials_exception
+
+    teacher_id = payload.get("sub")
+    if not teacher_id:
+        raise credentials_exception
+
+    row = await database.fetch_one(
+        "SELECT id, name, email, subject, phone, institute_id, active FROM teachers WHERE id = :id",
+        values={"id": int(teacher_id)},
+    )
+    if not row:
+        raise credentials_exception
+    if not row["active"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Your teacher account has been suspended.",
+        )
+    return dict(row)

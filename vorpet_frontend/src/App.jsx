@@ -153,6 +153,89 @@ const CSS = `
   .top-bar-sub { font-size: 12px; color: var(--muted); }
   .greeting { font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
   .greeting-sub { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+  /* ── Phase 5: Video Call styles ── */
+  .call-room { display:flex; flex-direction:column; height:100svh; background:#0a0a0f; color:#fff; position:fixed; inset:0; z-index:100; }
+  .call-header { display:flex; align-items:center; justify-content:space-between; padding:14px 20px; background:rgba(255,255,255,0.04); border-bottom:1px solid rgba(255,255,255,0.08); }
+  .call-header-title { font-size:15px; font-weight:700; color:#fff; }
+  .call-header-code { font-size:11px; color:rgba(255,255,255,0.45); background:rgba(255,255,255,0.08); padding:3px 10px; border-radius:100px; }
+  .call-videos { flex:1; display:grid; gap:8px; padding:14px; overflow:hidden; min-height:0; align-items:stretch; }
+  .call-videos.one { grid-template-columns:1fr; }
+  .call-videos.two { grid-template-columns:1fr 1fr; }
+  .call-videos.many { grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); }
+  .video-tile { position:relative; background:#1a1a2e; border-radius:14px; overflow:hidden; display:flex; align-items:center; justify-content:center; height:100%; min-height:200px; aspect-ratio:unset; }
+  .video-tile video { width:100%; height:100%; object-fit:cover; object-position:center; }
+  .video-tile-name { position:absolute; bottom:10px; left:12px; font-size:12px; font-weight:600; color:#fff; background:rgba(0,0,0,0.55); padding:3px 10px; border-radius:100px; }
+  .video-tile-muted { position:absolute; top:10px; right:10px; background:rgba(229,57,53,0.85); border-radius:50%; width:26px; height:26px; display:flex; align-items:center; justify-content:center; font-size:13px; }
+  .call-controls { display:flex; align-items:center; justify-content:center; gap:16px; padding:16px; background:rgba(255,255,255,0.03); border-top:1px solid rgba(255,255,255,0.06); }
+  .ctrl-btn { width:52px; height:52px; border-radius:50%; border:none; cursor:pointer; font-size:20px; display:flex; align-items:center; justify-content:center; transition:all .2s; }
+  .ctrl-btn.on  { background:rgba(255,255,255,0.12); color:#fff; }
+  .ctrl-btn.off { background:rgba(229,57,53,0.85); color:#fff; }
+  .ctrl-btn.end { background:#e53935; color:#fff; width:60px; height:60px; font-size:22px; }
+  .ctrl-btn:hover { transform:scale(1.08); }
+  .call-lobby { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:70vh; gap:20px; padding:40px; }
+  .call-lobby-card { background:var(--bg2); border:1px solid var(--border); border-radius:20px; padding:40px; max-width:460px; width:100%; text-align:center; box-shadow:0 4px 24px rgba(0,0,0,0.08); }
+  .call-lobby-icon { font-size:56px; margin-bottom:16px; }
+  .call-lobby-title { font-size:20px; font-weight:800; margin-bottom:8px; color:var(--text); }
+  .call-lobby-sub { font-size:13px; color:var(--muted); line-height:1.6; margin-bottom:24px; }
+  .room-code-display { font-family:monospace; font-size:28px; font-weight:800; letter-spacing:6px; color:var(--accent); background:var(--light); border:2px dashed var(--border2); border-radius:12px; padding:16px; margin:16px 0; cursor:pointer; }
+  .call-participant-list { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin:12px 0; }
+  .call-participant { display:flex; align-items:center; gap:6px; background:var(--light); border:1px solid var(--border2); border-radius:100px; padding:5px 12px; font-size:12px; font-weight:600; color:var(--accent2); }
+  .doubt-section-tabs { display:flex; gap:10px; margin-bottom:20px; }
+  .doubt-tab { flex:1; padding:12px; border-radius:12px; text-align:center; cursor:pointer; border:2px solid var(--border); font-size:13px; font-weight:600; color:var(--muted); transition:all .2s; background:var(--bg2); }
+  .doubt-tab.active { border-color:var(--accent); color:var(--accent); background:var(--light); }
+  .teacher-badge { display:inline-flex; align-items:center; gap:6px; background:linear-gradient(135deg,#5b21b6,#7c3aed); color:#fff; font-size:11px; font-weight:700; padding:3px 10px; border-radius:100px; }
+  .incoming-call-banner { position:fixed; bottom:24px; right:24px; background:#fff; border:2px solid var(--accent); border-radius:20px; padding:18px 24px; box-shadow:0 8px 32px rgba(124,58,237,0.25); z-index:999; display:flex; align-items:center; gap:16px; animation:slideUp .3s ease; }
+  @keyframes slideUp { from{transform:translateY(40px);opacity:0} to{transform:translateY(0);opacity:1} }
+  .notif-banner { position:fixed; top:72px; right:20px; z-index:9999; background:#fff; border:2px solid #7c3aed; border-radius:16px; padding:16px 20px; box-shadow:0 8px 32px rgba(124,58,237,0.25); max-width:320px; display:flex; align-items:flex-start; gap:12px; animation:slideUp .3s ease; }
+  .notif-icon { font-size:28px; flex-shrink:0; }
+  .notif-title { font-size:14px; font-weight:700; color:#1e1b4b; margin-bottom:3px; }
+  .notif-body { font-size:12px; color:#555; margin-bottom:10px; line-height:1.5; }
+  .notif-actions { display:flex; gap:8px; }
+  .history-table { width:100%; border-collapse:collapse; }
+  .history-table th { padding:9px 12px; text-align:left; font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; background:var(--bg3); }
+  .history-table td { padding:10px 12px; font-size:13px; border-top:1px solid var(--border); }
+  .duration-badge { display:inline-flex; align-items:center; gap:5px; background:var(--light); color:var(--accent2); font-size:11px; font-weight:700; padding:3px 9px; border-radius:100px; }
+  .attendance-row { display:flex; align-items:center; gap:10px; padding:9px 14px; border-bottom:1px solid var(--border); font-size:13px; }
+  .att-present { background:#f0fdf4; color:#16a34a; font-size:11px; font-weight:700; padding:2px 8px; border-radius:100px; }
+  .att-absent { background:#fef2f2; color:#dc2626; font-size:11px; font-weight:700; padding:2px 8px; border-radius:100px; }
+  .whiteboard-wrap { background:#fff; border-top:2px solid rgba(255,255,255,0.1); position:relative; flex-shrink:0; }
+  .whiteboard-toolbar { display:flex; align-items:center; gap:8px; padding:8px 14px; background:#1a1a2e; border-bottom:1px solid rgba(255,255,255,0.08); flex-wrap:wrap; }
+  .wb-btn { background:rgba(255,255,255,0.08); border:1.5px solid rgba(255,255,255,0.15); color:#fff; border-radius:8px; padding:5px 12px; font-size:12px; cursor:pointer; transition:all .2s; display:flex;align-items:center;gap:5px; }
+  .wb-btn:hover { background:rgba(255,255,255,0.15); }
+  .wb-btn.active { background:#7c3aed; border-color:#7c3aed; }
+  .wb-color { width:24px; height:24px; border-radius:50%; cursor:pointer; border:2px solid transparent; transition:.2s; flex-shrink:0; }
+  .wb-color.selected { border-color:#fff; transform:scale(1.2); }
+  .wb-canvas { display:block; cursor:crosshair; touch-action:none; }
+  .chat-panel { width:300px; background:#111827; border-left:1px solid rgba(255,255,255,0.08); display:flex; flex-direction:column; flex-shrink:0; }
+  .chat-panel-header { padding:12px 16px; background:rgba(255,255,255,0.04); border-bottom:1px solid rgba(255,255,255,0.08); font-size:13px; font-weight:700; color:#fff; display:flex; align-items:center; justify-content:space-between; }
+  .chat-messages { flex:1; overflow-y:auto; padding:12px; display:flex; flex-direction:column; gap:8px; min-height:0; }
+  .chat-msg { max-width:85%; }
+  .chat-msg.mine { align-self:flex-end; }
+  .chat-msg.theirs { align-self:flex-start; }
+  .chat-bubble { padding:8px 12px; border-radius:12px; font-size:13px; line-height:1.5; word-break:break-word; }
+  .chat-msg.mine .chat-bubble { background:#7c3aed; color:#fff; border-bottom-right-radius:3px; }
+  .chat-msg.theirs .chat-bubble { background:rgba(255,255,255,0.1); color:#fff; border-bottom-left-radius:3px; }
+  .chat-sender { font-size:10px; color:rgba(255,255,255,0.4); margin-bottom:3px; }
+  .chat-time { font-size:10px; color:rgba(255,255,255,0.3); margin-top:3px; text-align:right; }
+  .chat-input-row { display:flex; gap:8px; padding:10px 12px; border-top:1px solid rgba(255,255,255,0.08); background:#0f172a; }
+  .chat-input { flex:1; background:#1e293b; border:1.5px solid #7c3aed; color:#fff; border-radius:10px; padding:8px 12px; font-size:13px; outline:none; font-family:inherit; caret-color:#fff; }
+  .chat-input:focus { border-color:#7c3aed; }
+  .chat-input::placeholder { color:rgba(255,255,255,0.3); }
+  .chat-send { background:#7c3aed; border:none; color:#fff; border-radius:10px; padding:8px 14px; font-size:14px; cursor:pointer; transition:.2s; flex-shrink:0; }
+  .chat-send:hover { background:#5b21b6; }
+  .chat-unread { position:absolute; top:-4px; right:-4px; background:#ef4444; color:#fff; font-size:9px; font-weight:800; width:16px; height:16px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
+  .call-main { display:flex; flex:1; min-height:0; overflow:hidden; }
+  .call-left { flex:1; display:flex; flex-direction:column; min-width:0; }
+  @media(max-width:700px){ .chat-panel{ width:100%; border-left:none; border-top:1px solid rgba(255,255,255,0.08); max-height:220px; } .call-main{ flex-direction:column; } }
+  @media (max-width:600px) and (orientation:portrait) {
+    .call-videos.two { grid-template-columns:1fr; grid-template-rows:1fr 1fr; }
+    .call-videos.many { grid-template-columns:1fr; }
+    .call-videos { padding:6px; gap:5px; }
+    .video-tile { min-height:160px; }
+    .call-controls { padding:10px; gap:10px; }
+    .ctrl-btn { width:44px; height:44px; font-size:18px; }
+    .ctrl-btn.end { width:52px; height:52px; font-size:20px; }
+  }
 `
 
 const API = ""
@@ -184,6 +267,8 @@ function Sidebar({ page, go, user }) {
     { id: "omrResults",   icon: "◎", label: "Results" },
     { id: "fees",         icon: "💰", label: "Fees" },
     { id: "billing",      icon: "🧾", label: "Billing & Plans" },
+    { id: "teachers",     icon: "👩‍🏫", label: "Teachers" },
+    { id: "callHistory",  icon: "📊", label: "Call History" },
   ]
   return (
     <div className="sidebar">
@@ -282,6 +367,7 @@ function LoginPage({ go, updateState }) {
         </button>
         <div style={{marginTop:12,textAlign:"center"}}>
           <div style={{fontSize:12,color:"var(--muted)",marginBottom:8}}>Are you a student?</div>
+          <button className="btn btn-secondary btn-lg" style={{width:"100%",justifyContent:"center",marginBottom:8}} onClick={()=>go("teacherLogin")}>👩‍🏫 Teacher Login</button>
           <button className="btn btn-secondary btn-lg" style={{width:"100%",justifyContent:"center"}} onClick={()=>{ updateState({user:{name:"Student"}}); go("studentExam") }}>
             📋 Student Exam Portal →
           </button>
@@ -303,7 +389,7 @@ function DashboardPage({ state, go }) {
     Promise.all([
       p2get("/exam/list"), p2get("/student/list"), p2get("/batch/list"),
       p2get("/fees/monthly/summary"),
-      fetch("/api/usage", {headers: authHeaders()}).then(r=>r.json()),
+      fetch("/api/usage", {headers: mixedHeaders()}).then(r=>r.json()),
     ])
     .then(([e, s, b, f, u])=>{
       setStats({
@@ -565,12 +651,12 @@ function UploadPage({ state, updateState, go }) {
 
   const [uploadUsage, setUploadUsage] = useState(null)
   useEffect(()=>{
-    fetch("/api/usage", {headers: authHeaders()}).then(r=>r.json()).then(setUploadUsage).catch(()=>{})
+    fetch("/api/usage", {headers: mixedHeaders()}).then(r=>r.json()).then(setUploadUsage).catch(()=>{})
   },[])
 
   return (
     <div className="shell">
-      <Sidebar page="upload" go={go} user={state.user} />
+      {state.teacher ? <TeacherSidebar page="upload" go={go} teacher={state.teacher} /> : <Sidebar page="upload" go={go} user={state.user} />}
       <div className="main">
         <div className="top-bar">
           <div style={{ flex: 1 }}>
@@ -699,7 +785,7 @@ function QuestionTypePage({ state, updateState, go }) {
   const [sub, setSub] = useState(state.omrSubType)
   return (
     <div className="shell">
-      <Sidebar page="upload" go={go} user={state.user} />
+      {state.teacher ? <TeacherSidebar page="upload" go={go} teacher={state.teacher} /> : <Sidebar page="upload" go={go} user={state.user} />}
       <div className="main">
         <div className="top-bar"><div style={{ flex: 1 }}><div className="top-bar-title">Question Type</div><div className="top-bar-sub">Step 2 of 5</div></div></div>
         <div className="page">
@@ -828,7 +914,7 @@ function ExamConfigPage({ state, updateState, go }) {
 
   return (
     <div className="shell">
-      <Sidebar page="upload" go={go} user={state.user} />
+      {state.teacher ? <TeacherSidebar page="upload" go={go} teacher={state.teacher} /> : <Sidebar page="upload" go={go} user={state.user} />}
       <div className="main">
         <div className="top-bar"><div style={{ flex: 1 }}><div className="top-bar-title">Configure</div><div className="top-bar-sub">Step 3 of 5 — Set exam parameters</div></div></div>
         <div className="page">
@@ -1008,7 +1094,7 @@ function QuestionEditorPage({ state, updateState, go }) {
 
   return (
     <div className="shell">
-      <Sidebar page="upload" go={go} user={state.user} />
+      {state.teacher ? <TeacherSidebar page="upload" go={go} teacher={state.teacher} /> : <Sidebar page="upload" go={go} user={state.user} />}
       <div className="main">
         <div className="top-bar"><div style={{flex:1}}><div className="top-bar-title">Edit Questions</div><div className="top-bar-sub">Step 4 of 5 — Review and edit before export</div></div><span className="badge badge-green">✓ Generated</span></div>
         <div className="page">
@@ -1109,6 +1195,25 @@ const saGet  = (path) => fetch(`${API2}${path}`, { headers: authHeaders() }).the
 const saPost = (path,body) => fetch(`${API2}${path}`, { method:"POST", headers: authHeaders(), body:JSON.stringify(body) }).then(r=>r.json())
 const saPut  = (path,body) => fetch(`${API2}${path}`, { method:"PUT",  headers: authHeaders(), body:JSON.stringify(body) }).then(r=>r.json())
 const saDel  = (path)      => fetch(`${API2}${path}`, { method:"DELETE", headers: authHeaders() }).then(r=>r.json())
+// ── Phase 5: Teacher API helpers ────────────────────────────────────────────
+const urlBase64ToUint8Array = (base64String) => {
+  const padding = "=".repeat((4 - base64String.length % 4) % 4)
+  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/")
+  const rawData = window.atob(base64)
+  return Uint8Array.from([...rawData].map(c => c.charCodeAt(0)))
+}
+const getTeacherToken = () => localStorage.getItem("teacher_token")
+const setTeacherToken = (t) => localStorage.setItem("teacher_token", t)
+const clearTeacherToken = () => localStorage.removeItem("teacher_token")
+const teacherHeaders = () => {
+  const t = getTeacherToken()
+  return t ? { "Authorization": `Bearer ${t}`, "Content-Type": "application/json" } : { "Content-Type": "application/json" }
+}
+const tGet  = (path) => fetch(`${API2}${path}`, { headers: teacherHeaders() }).then(r=>r.json())
+const tPost = (path, body) => fetch(`${API2}${path}`, { method:"POST", headers: teacherHeaders(), body: JSON.stringify(body) }).then(r=>r.json())
+const mixedHeaders = () => { const t = getTeacherToken() || getToken(); return t ? { "Authorization": `Bearer ${t}`, "Content-Type": "application/json" } : { "Content-Type": "application/json" } }
+const mGet = (path) => fetch(`${API2}${path}`, { headers: mixedHeaders() }).then(r=>r.json())
+
 
 function PDFExportPage({ state, updateState, go }) {
   const [loading, setLoading]           = useState(false)
@@ -1242,7 +1347,7 @@ function PDFExportPage({ state, updateState, go }) {
 
   return (
     <div className="shell">
-      <Sidebar page="upload" go={go} user={state.user} />
+      {state.teacher ? <TeacherSidebar page="upload" go={go} teacher={state.teacher} /> : <Sidebar page="upload" go={go} user={state.user} />}
       <div className="main">
         <div className="top-bar">
           <div style={{flex:1}}>
@@ -1545,7 +1650,7 @@ function ExamDetailPage({ state, go }) {
   return (
     <div className="shell">
       {confirm && <ConfirmDialog {...confirm}/>}
-      <Sidebar page="omrExams" go={go} user={state.user}/>
+      {state.teacher ? <TeacherSidebar page="omrExams" go={go} teacher={state.teacher} /> : <Sidebar page="omrExams" go={go} user={state.user}/>}
       <div className="main">
         <div className="top-bar">
           <div style={{flex:1}}>
@@ -1766,7 +1871,7 @@ function OMRExamsPage({ state, go }) {
   return (
     <div className="shell">
       {confirm && <ConfirmDialog {...confirm}/>}
-      <Sidebar page="omrExams" go={go} user={state.user}/>
+      {state.teacher ? <TeacherSidebar page="omrExams" go={go} teacher={state.teacher} /> : <Sidebar page="omrExams" go={go} user={state.user}/>}
       <div className="main">
         <div className="top-bar">
           <div style={{flex:1}}><div className="top-bar-title">OMR Exams</div><div className="top-bar-sub">Manage online MCQ exams and batch assignment</div></div>
@@ -2126,7 +2231,7 @@ function AssignStudentsPage({ state, go }) {
 
   return (
     <div className="shell">
-      <Sidebar page="omrExams" go={go} user={state.user}/>
+      {state.teacher ? <TeacherSidebar page="omrExams" go={go} teacher={state.teacher} /> : <Sidebar page="omrExams" go={go} user={state.user}/>}
       <div className="main">
         <div className="top-bar"><div style={{flex:1}}><div className="top-bar-title">Assign Students</div><div className="top-bar-sub">{exam?.school_name} — {exam?.subject} — {exam?.class_name}</div></div>
           <button className="btn btn-secondary" onClick={()=>go("omrExams")}>← Back to Exams</button>
@@ -2213,7 +2318,7 @@ function OMRResultsPage({ state, go }) {
 
   return (
     <div className="shell">
-      <Sidebar page="omrResults" go={go} user={state.user}/>
+      {state.teacher ? <TeacherSidebar page="omrResults" go={go} teacher={state.teacher} /> : <Sidebar page="omrResults" go={go} user={state.user}/>}
       <div className="main">
         <div className="top-bar"><div style={{flex:1}}><div className="top-bar-title">Results</div><div className="top-bar-sub">Exam results — student & batch analytics</div></div></div>
         <div className="page">
@@ -2874,6 +2979,7 @@ function StudentExamPage({ state, updateState, go }) {
             </div>
           </div>
         ))}
+        <StudentDoubtClearSection studentData={studentData} />
       </div>
     </div>
   )
@@ -4125,6 +4231,1225 @@ function BillingPage({ state, go }) {
   )
 }
 
+
+// ═══════════════════════════════════════════════════════════════
+// PHASE 5 — TEACHER LOGIN PAGE
+// ═══════════════════════════════════════════════════════════════
+function TeacherLoginPage({ go, updateState }) {
+  const [form, setForm] = useState({ email:"", password:"" })
+  const [loading, setLoading] = useState(false)
+  const [err, setErr] = useState("")
+
+  const login = async () => {
+    setErr(""); setLoading(true)
+    try {
+      const res = await fetch(`${API2}/teacher/login`, {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body: JSON.stringify(form)
+      }).then(r=>r.json())
+      if (!res.success) { setErr(res.detail || "Login failed"); return }
+      setTeacherToken(res.access_token)
+      updateState({ teacher: res.teacher, teacherToken: res.access_token })
+      go("teacherDashboard")
+    } catch(e) { setErr("Network error") }
+    finally { setLoading(false) }
+  }
+
+  return (
+    <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"var(--bg)"}}>
+      <div style={{background:"var(--bg2)",border:"1px solid var(--border)",borderRadius:20,padding:44,width:380,boxShadow:"0 4px 24px rgba(0,0,0,0.08)"}}>
+        <div style={{textAlign:"center",marginBottom:28}}>
+          <div style={{fontSize:42,marginBottom:8}}>👩‍🏫</div>
+          <div style={{fontFamily:"sans-serif",fontSize:22,fontWeight:800,color:"var(--text)"}}>Teacher Login</div>
+          <div style={{fontSize:13,color:"var(--muted)",marginTop:4}}>ExamGuru · Doubt Clear Portal</div>
+        </div>
+        {err && <div style={{background:"#fef2f2",color:"#dc2626",border:"1px solid #fecaca",borderRadius:8,padding:"10px 14px",fontSize:13,marginBottom:14}}>{err}</div>}
+        <div className="form-group">
+          <label>Email</label>
+          <input type="email" value={form.email} onChange={e=>setForm(f=>({...f,email:e.target.value}))} placeholder="teacher@school.com" />
+        </div>
+        <div className="form-group">
+          <label>Password</label>
+          <input type="password" value={form.password} onChange={e=>setForm(f=>({...f,password:e.target.value}))} placeholder="••••••••"
+            onKeyDown={e=>e.key==="Enter"&&login()} />
+        </div>
+        <button className="btn btn-primary btn-lg" style={{width:"100%",justifyContent:"center",marginTop:8}} onClick={login} disabled={loading}>
+          {loading ? "Signing in…" : "Sign In as Teacher →"}
+        </button>
+        <div style={{textAlign:"center",marginTop:16}}>
+          <span style={{cursor:"pointer",color:"var(--accent2)",fontSize:13}} onClick={()=>go("login")}>← Admin Login</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// PHASE 5 — TEACHER DASHBOARD
+// ═══════════════════════════════════════════════════════════════
+function TeacherSidebar({ page, go, teacher }) {
+  const nav = [
+    { id:"teacherDashboard", icon:"⊞", label:"Dashboard" },
+    { id:"upload",           icon:"✦", label:"Generate Questions" },
+    { id:"omrExams",         icon:"≡", label:"OMR Exams" },
+    { id:"omrResults",       icon:"◎", label:"Results" },
+    { id:"doubtClear",       icon:"📹", label:"Doubt Clear" },
+    { id:"callHistory",    icon:"📊", label:"Call History" },
+  ]
+  return (
+    <div className="sidebar">
+      <div className="logo">
+        <div className="logo-mark">Exam<span>Guru</span></div>
+        <div className="logo-sub">TEACHER PORTAL</div>
+      </div>
+      {nav.map(n=>(
+        <div key={n.id} className={`nav-item${page===n.id?" active":""}`} onClick={()=>go(n.id)}>
+          <span className="nav-icon">{n.icon}</span>{n.label}
+          {n.id==="doubtClear"&&<span style={{marginLeft:"auto",background:"linear-gradient(135deg,#5b21b6,#7c3aed)",color:"#fff",fontSize:9,fontWeight:700,padding:"2px 7px",borderRadius:100}}>LIVE</span>}
+        </div>
+      ))}
+      <div className="sidebar-bottom">
+        <div className="user-chip">
+          <div className="user-avatar">{teacher?.name?.[0]||"T"}</div>
+          <div>
+            <div className="user-name">{teacher?.name||"Teacher"}</div>
+            <div className="user-role" style={{color:"#c4b5fd"}}>Teacher</div>
+          </div>
+        </div>
+        <button className="btn btn-secondary" style={{width:"100%",marginTop:10,fontSize:12,justifyContent:"center"}}
+          onClick={()=>{ clearTeacherToken(); go("teacherLogin") }}>Sign out</button>
+      </div>
+    </div>
+  )
+}
+
+function TeacherDashboardPage({ state, go }) {
+  const teacher = state.teacher || {}
+  const actions = [
+    { icon:"✦", title:"Generate Questions", desc:"Upload image → AI generates → PDF + Online Exam", page:"upload" },
+    { icon:"≡", title:"OMR Exams",          desc:"Manage exams, assign to batches, edit MCQ options", page:"omrExams" },
+    { icon:"◎", title:"Results",            desc:"View scores, rank lists, question-wise analysis",  page:"omrResults" },
+    { icon:"📹", title:"Doubt Clear",        desc:"Start 1-to-1 or group video call with students",  page:"doubtClear" },
+    { icon:"📊", title:"Call History",       desc:"View all sessions, duration and student attendance", page:"callHistory" },
+  ]
+  return (
+    <div className="shell">
+      <TeacherSidebar page="teacherDashboard" go={go} teacher={teacher} />
+      <div className="main">
+        <div className="page">
+          <div className="greeting">Good {new Date().getHours()<12?"Morning":new Date().getHours()<17?"Afternoon":"Evening"}, {teacher.name?.split(" ")[0]} 👋</div>
+          <div className="greeting-sub">Teacher Portal · {teacher.institute_name}</div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(240px,1fr))",gap:16,marginTop:8}}>
+            {actions.map((a,i)=>(
+              <div key={i} className="choice-card" onClick={()=>go(a.page)} style={{textAlign:"left",padding:22}}>
+                <div style={{fontSize:28,marginBottom:10}}>{a.icon}</div>
+                <div style={{fontWeight:700,fontSize:14,marginBottom:6}}>{a.title}</div>
+                <div style={{fontSize:12,color:"var(--muted)",lineHeight:1.6}}>{a.desc}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// PHASE 5 — DOUBT CLEAR PAGE (Teacher side)
+// ═══════════════════════════════════════════════════════════════
+function DoubtClearPage({ state, go }) {
+  const teacher = state.teacher || {}
+  const [tab, setTab] = useState("one_to_one")
+  const [students, setStudents] = useState([])
+  const [batches, setBatches] = useState([])
+  const [selStudent, setSelStudent] = useState("")
+  const [selBatch, setSelBatch] = useState("")
+  const [callTitle, setCallTitle] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [room, setRoom] = useState(null)
+  const [activeRooms, setActiveRooms] = useState([])
+  const [copied, setCopied] = useState(false)
+
+  useEffect(()=>{
+    mGet("/api/v2/student/list").then(r=>setStudents(r.students||[]))
+    mGet("/api/v2/batch/list").then(r=>setBatches(r.batches||[]))
+    // Load active rooms for this institute
+    const loadActiveRooms = () => {
+      fetch(`${API2}/call/rooms/active`, { headers: mixedHeaders() })
+        .then(r=>r.json()).then(r=>setActiveRooms(r.rooms||[]))
+    }
+    loadActiveRooms()
+  },[])
+
+  const startCall = async () => {
+    setLoading(true)
+    try {
+      const body = {
+        room_type: tab,
+        title: callTitle || (tab==="group" ? `Group Call - ${batches.find(b=>String(b.id)===selBatch)?.name||"Batch"}` : `Call with ${students.find(s=>String(s.id)===selStudent)?.name||"Student"}`),
+        batch_id:   tab==="group"      ? parseInt(selBatch)   : null,
+        student_id: tab==="one_to_one" ? parseInt(selStudent) : null,
+      }
+      const token = getTeacherToken() || getToken()
+      const res = await fetch(`${API2}/call/room/create`, {
+        method:"POST",
+        headers:{ "Authorization":`Bearer ${token}`, "Content-Type":"application/json" },
+        body: JSON.stringify(body)
+      }).then(r=>r.json())
+      if (res.success) {
+        setRoom(res)
+        setActiveRooms(ar=>[...ar, { room_code:res.room_code, room_type:tab, title:body.title, active:true }])
+        // Send push notifications
+        const notifToken = getTeacherToken() || getToken()
+        if (tab === "group" && selBatch) {
+          fetch(`${API2}/notify/send/${selBatch}`, {
+            method:"POST", headers:{"Authorization":`Bearer ${notifToken}`,"Content-Type":"application/json"},
+            body: JSON.stringify({ room_code:res.room_code, teacher_name: teacher.name||"Teacher",
+              title:`📹 ${teacher.name||"Teacher"} started a group call!`,
+              message:`Join now with code: ${res.room_code}` })
+          }).catch(()=>{})
+        } else if (tab === "one_to_one" && selStudent) {
+          fetch(`${API2}/notify/send-student/${selStudent}`, {
+            method:"POST", headers:{"Authorization":`Bearer ${notifToken}`,"Content-Type":"application/json"},
+            body: JSON.stringify({ room_code:res.room_code, teacher_name: teacher.name||"Teacher" })
+          }).catch(()=>{})
+        }
+      }
+    } catch(e){ console.error(e) }
+    setLoading(false)
+  }
+
+  const endCall = async () => {
+    if (!room) return
+    const token = getTeacherToken() || getToken()
+    await fetch(`${API2}/call/room/${room.room_code}/end`, {
+      method:"POST", headers:{ "Authorization":`Bearer ${token}` }
+    })
+    // Remove from active rooms list too
+    setActiveRooms(ar => ar.filter(r => r.room_code !== room.room_code))
+    setRoom(null)
+  }
+
+  const copyCode = () => {
+    navigator.clipboard.writeText(room.room_code)
+    setCopied(true); setTimeout(()=>setCopied(false),2000)
+  }
+
+  // If room is active — show call room UI
+  if (room) {
+    return (
+      <div className="shell">
+        <TeacherSidebar page="doubtClear" go={go} teacher={teacher} />
+        <div className="main">
+          <div className="page">
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20}}>
+              <div>
+                <div style={{fontSize:18,fontWeight:800,color:"var(--text)"}}>📹 Live Call — {room.room_type==="group"?"Group":"1-to-1"}</div>
+                <div style={{fontSize:12,color:"var(--muted)",marginTop:3}}>Share the room code with students to join</div>
+              </div>
+              <button className="btn btn-danger" onClick={endCall}>⏹ End Call</button>
+            </div>
+            {/* Room code display */}
+            <div className="card" style={{textAlign:"center",marginBottom:16}}>
+              <div style={{fontSize:12,fontWeight:700,color:"var(--muted)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:8}}>Room Code — Share with students</div>
+              <div className="room-code-display" onClick={copyCode}>{room.room_code}</div>
+              <button className="btn btn-secondary" onClick={copyCode} style={{marginTop:4}}>
+                {copied ? "✓ Copied!" : "📋 Copy Code"}
+              </button>
+              <div style={{fontSize:12,color:"var(--muted)",marginTop:8}}>
+                Students can join at: <strong>examguru.duckdns.org → Doubt Clear → Enter Code</strong>
+              </div>
+            </div>
+            {/* LiveKit embed */}
+            <div className="card" style={{padding:0,overflow:"hidden",background:"#0a0a0f",minHeight:500}}>
+              <LiveKitRoom
+                token={room.livekit_token}
+                serverUrl={"wss://examguru.duckdns.org/livekit"}
+                roomName={room.room_code}
+                participantName={teacher.name||"Teacher"}
+                isHost={true}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="shell">
+      <TeacherSidebar page="doubtClear" go={go} teacher={teacher} />
+      <div className="main">
+        <div className="page">
+          <div style={{fontSize:18,fontWeight:800,marginBottom:4}}>📹 Doubt Clear</div>
+          <div style={{fontSize:13,color:"var(--muted)",marginBottom:24}}>Start a live video session with your students</div>
+
+          {/* Tabs */}
+          <div className="doubt-section-tabs">
+            <div className={`doubt-tab${tab==="one_to_one"?" active":""}`} onClick={()=>setTab("one_to_one")}>
+              👤 1-to-1 Call
+            </div>
+            <div className={`doubt-tab${tab==="group"?" active":""}`} onClick={()=>setTab("group")}>
+              👥 Group Call (Batch)
+            </div>
+          </div>
+
+          <div className="card">
+            <div className="card-title">
+              {tab==="one_to_one" ? "👤 Start 1-to-1 Call with a Student" : "👥 Start Group Call for a Batch"}
+            </div>
+            {tab==="one_to_one" ? (
+              <div className="form-group">
+                <label>Select Student</label>
+                <select value={selStudent} onChange={e=>setSelStudent(e.target.value)}>
+                  <option value="">— Choose a student —</option>
+                  {students.map(s=>(
+                    <option key={s.id} value={s.id}>{s.name} · {s.roll_no}</option>
+                  ))}
+                </select>
+              </div>
+            ) : (
+              <div className="form-group">
+                <label>Select Batch</label>
+                <select value={selBatch} onChange={e=>setSelBatch(e.target.value)}>
+                  <option value="">— Choose a batch —</option>
+                  {batches.map(b=>(
+                    <option key={b.id} value={b.id}>{b.name} · {b.class_name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+            <div className="form-group">
+              <label>Call Title (optional)</label>
+              <input value={callTitle} onChange={e=>setCallTitle(e.target.value)} placeholder="e.g. Chapter 12 Doubt Session" />
+            </div>
+            <button className="btn btn-primary btn-lg"
+              onClick={startCall}
+              disabled={loading || (tab==="one_to_one" && !selStudent) || (tab==="group" && !selBatch)}>
+              {loading ? "Creating…" : "📹 Start Call"}
+            </button>
+          </div>
+
+          {/* Active rooms */}
+          {activeRooms.length > 0 && (
+            <div className="card">
+              <div className="card-title">🟢 Your Active Rooms</div>
+              {activeRooms.map((r,i)=>(
+                <div key={i} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"10px 0",borderBottom:"1px solid var(--border)"}}>
+                  <div>
+                    <div style={{fontWeight:600,fontSize:13}}>{r.title||r.room_code}</div>
+                    <div style={{fontSize:11,color:"var(--muted)",marginTop:2}}>{r.room_type==="group"?"Group Call":"1-to-1"} · Code: <strong>{r.room_code}</strong></div>
+                  </div>
+                  <button className="btn btn-danger" style={{padding:"4px 12px",fontSize:12}} onClick={async()=>{
+                    const token = getTeacherToken()||getToken()
+                    await fetch(`${API2}/call/room/${r.room_code}/end`,{method:"POST",headers:{"Authorization":`Bearer ${token}`}})
+                    setActiveRooms(ar=>ar.filter((_,j)=>j!==i))
+                  }}>End</button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// PHASE 5 — LIVEKIT VIDEO ROOM COMPONENT
+// Uses LiveKit JS SDK loaded via CDN script tag
+// ═══════════════════════════════════════════════════════════════
+function LiveKitRoom({ token, serverUrl, roomName, participantName, isHost=false, onLeave }) {
+  const containerRef = useRef(null)
+  const roomRef = useRef(null)
+  const [participants, setParticipants] = useState([])
+  const [micOn, setMicOn] = useState(true)
+  const [camOn, setCamOn] = useState(true)
+  const [screenOn, setScreenOn] = useState(false)
+  const [wbOpen, setWbOpen] = useState(false)
+  const [chatOpen, setChatOpen] = useState(false)
+  const [messages, setMessages] = useState([])
+  const [chatInput, setChatInput] = useState("")
+  const [unread, setUnread] = useState(0)
+  const chatEndRef = useRef(null)
+  const [connected, setConnected] = useState(false)
+  const [error, setError] = useState("")
+  const canvasRef = useRef(null)
+  const wbStateRef = useRef({ drawing:false, color:"#7c3aed", size:4, tool:"pen" })
+
+  useEffect(()=>{
+    let room = null
+    const connect = async () => {
+      try {
+        // LiveKit JS SDK must be loaded — we use dynamic import via CDN
+        if (!window.LivekitClient) {
+          // Load SDK from CDN
+          await new Promise((res, rej)=>{
+            const s = document.createElement("script")
+            s.src = "https://cdn.jsdelivr.net/npm/livekit-client@1.15.6/dist/livekit-client.umd.min.js"
+            s.onload = res; s.onerror = rej
+            document.head.appendChild(s)
+          })
+        }
+        const LK = window.LivekitClient
+        room = new LK.Room({
+          adaptiveStream: true,
+          dynacast: true,
+          videoCaptureDefaults: { resolution: LK.VideoPresets.h360.resolution },
+        })
+        roomRef.current = room
+
+        const update = () => updateParticipants(room)
+        room.on(LK.RoomEvent.ParticipantConnected,    update)
+        room.on(LK.RoomEvent.ParticipantDisconnected, update)
+        room.on(LK.RoomEvent.TrackSubscribed,         update)
+        room.on(LK.RoomEvent.TrackUnsubscribed,       update)
+        room.on(LK.RoomEvent.LocalTrackPublished,     update)
+        room.on(LK.RoomEvent.ActiveSpeakersChanged,   update)
+        room.on(LK.RoomEvent.Disconnected,            ()=>{ setConnected(false); if(onLeave) onLeave() })
+        // Handle incoming data — works with LiveKit SDK v1.x and v2.x
+        const handleData = (data, participant) => {
+          try {
+            // data may be Uint8Array or have a payload property (newer SDK)
+            const bytes = data instanceof Uint8Array ? data : (data.payload || data)
+            const decoded = new TextDecoder().decode(bytes)
+            const msg = JSON.parse(decoded)
+            console.log("[DataReceived]", msg.type, "from", participant?.identity || "remote")
+            if (msg.type === "wb_draw") drawRemote(msg)
+            if (msg.type === "wb_clear") { const c=canvasRef.current; if(c) c.getContext("2d").clearRect(0,0,c.width,c.height) }
+            if (msg.type === "chat") {
+              setMessages(m=>[...m, { text:msg.text, sender:msg.sender, time:msg.time, mine:false }])
+              setChatOpen(true)
+              setUnread(u=>u+1)
+              setTimeout(()=>chatEndRef.current?.scrollIntoView({behavior:"smooth"}),100)
+            }
+          } catch(e) { console.error("[DataReceived error]", e) }
+        }
+        room.on(LK.RoomEvent.DataReceived, handleData)
+
+        await room.connect(serverUrl, token)
+        await room.localParticipant.enableCameraAndMicrophone()
+        setConnected(true)
+        updateParticipants(room)
+        // Log join for attendance
+        try {
+          await fetch(`${API2}/call/join-log`, {
+            method:"POST", headers:{"Content-Type":"application/json"},
+            body: JSON.stringify({ room_code: roomName, participant_name: participantName, role: isHost?"teacher":"student" })
+          })
+        } catch(e) {}
+      } catch(e) {
+        setError("Could not connect to call server: " + e.message)
+        console.error(e)
+      }
+    }
+    connect()
+    return ()=>{ if(roomRef.current) roomRef.current.disconnect() }
+  }, [token, serverUrl])
+
+  const updateParticipants = (room) => {
+    try {
+      const remotes = room.remoteParticipants
+        ? Array.from(room.remoteParticipants.values())
+        : room.participants
+          ? Array.from(room.participants.values())
+          : []
+      const parts = room.localParticipant ? [room.localParticipant, ...remotes] : remotes
+      setParticipants(parts.map(p=>({
+        identity: p.identity || "",
+        name: p.name || p.identity || "Participant",
+        isLocal: p === room.localParticipant,
+        videoTrack: getVideoTrack(p),
+        audioTrack: getAudioTrack(p),
+        audioMuted: p.isMicrophoneEnabled === false,
+        videoMuted: p.isCameraEnabled === false,
+      })))
+    } catch(e) { console.warn("updateParticipants error:", e) }
+  }
+
+  const getVideoTrack = (participant) => {
+    try {
+      const pubs = participant.trackPublications || participant.tracks
+      if (!pubs) return null
+      // Prefer screen share track if active
+      for (const pub of pubs.values()) {
+        if ((pub.source === "screen_share" || pub.source === "screenshare") && pub.track) return pub.track
+      }
+      // Fall back to camera
+      for (const pub of pubs.values()) {
+        if ((pub.kind === "video" || pub.source === "camera") && pub.track) return pub.track
+      }
+    } catch(e) {}
+    return null
+  }
+
+  const getAudioTrack = (participant) => {
+    try {
+      const pubs = participant.trackPublications || participant.tracks
+      if (!pubs) return null
+      for (const pub of pubs.values()) {
+        if ((pub.kind === "audio" || pub.source === "microphone") && pub.track) return pub.track
+      }
+    } catch(e) {}
+    return null
+  }
+
+  const toggleMic = async () => {
+    if (!roomRef.current) return
+    await roomRef.current.localParticipant.setMicrophoneEnabled(!micOn)
+    setMicOn(m=>!m)
+  }
+  const toggleCam = async () => {
+    if (!roomRef.current) return
+    await roomRef.current.localParticipant.setCameraEnabled(!camOn)
+    setCamOn(c=>!c)
+  }
+  const toggleScreen = async () => {
+    if (!roomRef.current) return
+    try {
+      if (!screenOn) {
+        await roomRef.current.localParticipant.setScreenShareEnabled(true)
+        setScreenOn(true)
+      } else {
+        await roomRef.current.localParticipant.setScreenShareEnabled(false)
+        setScreenOn(false)
+      }
+    } catch(e) {
+      console.warn("Screen share error:", e)
+      alert("Screen sharing not supported or permission denied")
+    }
+  }
+
+  const drawRemote = (msg) => {
+    const canvas = canvasRef.current; if (!canvas) return
+    const ctx = canvas.getContext("2d")
+    if (msg.tool === "eraser") { ctx.globalCompositeOperation="destination-out"; ctx.lineWidth=20 }
+    else { ctx.globalCompositeOperation="source-over"; ctx.strokeStyle=msg.color||"#7c3aed"; ctx.lineWidth=msg.size||4 }
+    ctx.lineCap="round"; ctx.lineJoin="round"
+    if (msg.action==="start") { ctx.beginPath(); ctx.moveTo(msg.x,msg.y) }
+    else if (msg.action==="draw") { ctx.lineTo(msg.x,msg.y); ctx.stroke() }
+    ctx.globalCompositeOperation="source-over"
+  }
+  const sendWbData = (data) => {
+    if (!roomRef.current) return
+    try {
+      const encoded = new TextEncoder().encode(JSON.stringify(data))
+      const LK = window.LivekitClient
+      // Try v2 API first, fall back to v1
+      if (LK && LK.DataPacket_Kind) {
+        roomRef.current.localParticipant.publishData(encoded, LK.DataPacket_Kind.RELIABLE)
+      } else {
+        roomRef.current.localParticipant.publishData(encoded, { reliable: true })
+      }
+    } catch(e) { console.error("publishData error:", e) }
+  }
+  const getPos = (e, canvas) => {
+    const r=canvas.getBoundingClientRect(), sx=canvas.width/r.width, sy=canvas.height/r.height
+    if (e.touches) return { x:(e.touches[0].clientX-r.left)*sx, y:(e.touches[0].clientY-r.top)*sy }
+    return { x:(e.clientX-r.left)*sx, y:(e.clientY-r.top)*sy }
+  }
+  const wbDown = (e) => {
+    e.preventDefault(); const canvas=canvasRef.current; if(!canvas) return
+    const ws=wbStateRef.current; ws.drawing=true
+    const pos=getPos(e,canvas), ctx=canvas.getContext("2d")
+    if (ws.tool==="eraser") { ctx.globalCompositeOperation="destination-out"; ctx.lineWidth=20 }
+    else { ctx.globalCompositeOperation="source-over"; ctx.strokeStyle=ws.color; ctx.lineWidth=ws.size }
+    ctx.lineCap="round"; ctx.lineJoin="round"; ctx.beginPath(); ctx.moveTo(pos.x,pos.y)
+    sendWbData({type:"wb_draw",action:"start",x:pos.x,y:pos.y,color:ws.color,size:ws.size,tool:ws.tool})
+  }
+  const wbMove = (e) => {
+    e.preventDefault(); const canvas=canvasRef.current
+    if (!canvas||!wbStateRef.current.drawing) return
+    const ws=wbStateRef.current, pos=getPos(e,canvas), ctx=canvas.getContext("2d")
+    ctx.lineTo(pos.x,pos.y); ctx.stroke()
+    sendWbData({type:"wb_draw",action:"draw",x:pos.x,y:pos.y,color:ws.color,size:ws.size,tool:ws.tool})
+  }
+  const wbUp = () => { wbStateRef.current.drawing=false; const c=canvasRef.current; if(c) c.getContext("2d").globalCompositeOperation="source-over" }
+  const clearWb = (broadcast=true) => {
+    const c=canvasRef.current; if(!c) return
+    c.getContext("2d").clearRect(0,0,c.width,c.height)
+    if (broadcast) sendWbData({type:"wb_clear"})
+  }
+  const sendChat = () => {
+    if (!chatInput.trim() || !roomRef.current) return
+    const msg = { type:"chat", text:chatInput.trim(), sender:participantName, time:new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"}) }
+    sendWbData(msg)
+    setMessages(m=>[...m, { ...msg, mine:true }])
+    setChatInput("")
+    setTimeout(()=>chatEndRef.current?.scrollIntoView({behavior:"smooth"}),100)
+  }
+
+  const leaveCall = async () => {
+    // Log leave for attendance
+    try {
+      await fetch(`${API2}/call/leave-log`, {
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({ room_code: roomName, participant_name: participantName })
+      })
+    } catch(e) {}
+    if (roomRef.current) roomRef.current.disconnect()
+    if (onLeave) onLeave()
+  }
+
+  if (error) return (
+    <div style={{padding:40,textAlign:"center",color:"#f87171"}}>
+      <div style={{fontSize:32,marginBottom:12}}>⚠️</div>
+      <div style={{fontWeight:700,marginBottom:8}}>Connection Failed</div>
+      <div style={{fontSize:13,opacity:.7}}>{error}</div>
+      <div style={{fontSize:12,marginTop:12,opacity:.5}}>Check that LiveKit server is running on port 7880</div>
+    </div>
+  )
+
+  if (!connected) return (
+    <div style={{padding:60,textAlign:"center",color:"rgba(255,255,255,0.6)"}}>
+      <div style={{fontSize:32,marginBottom:12,animation:"pulse-dot 1.5s infinite"}}>🔗</div>
+      <div>Connecting to call server…</div>
+    </div>
+  )
+
+  const gridClass = participants.length === 1 ? "one" : participants.length === 2 ? "two" : "many"
+
+  return (
+    <div className="call-room">
+      <div className="call-header">
+        <div className="call-header-title">📹 Live Session</div>
+        <div style={{display:"flex",alignItems:"center",gap:10}}>
+          <div style={{fontSize:11,color:"rgba(255,255,255,0.55)"}}>
+            {participants.length} participant{participants.length!==1?"s":""}
+          </div>
+          <div style={{width:6,height:6,borderRadius:"50%",background:"#22c55e",animation:"pulse-dot 2s infinite"}}></div>
+        </div>
+      </div>
+      <div className="call-main">
+      <div className="call-left">
+      <div className={`call-videos ${gridClass}`}>
+        {participants.map((p,i)=>(
+          <VideoTile key={p.identity} participant={p} />
+        ))}
+      </div>
+      {wbOpen && (
+        <div className="whiteboard-wrap">
+          <div className="whiteboard-toolbar">
+            <span style={{fontSize:12,color:"rgba(255,255,255,0.7)",fontWeight:700,marginRight:4}}>📝 Whiteboard</span>
+            {["#7c3aed","#1e1b4b","#ef4444","#22c55e","#f59e0b","#3b82f6","#f97316","#ffffff"].map(c=>(
+              <div key={c} className="wb-color" style={{background:c,borderColor:wbStateRef.current.color===c?"#fff":"transparent"}}
+                onClick={()=>{ wbStateRef.current.color=c; wbStateRef.current.tool="pen" }} />
+            ))}
+            <button className={`wb-btn${wbStateRef.current.tool==="pen"?" active":""}`} onClick={()=>wbStateRef.current.tool="pen"}>✏️ Pen</button>
+            <button className={`wb-btn${wbStateRef.current.tool==="eraser"?" active":""}`} onClick={()=>wbStateRef.current.tool="eraser"}>🧹 Eraser</button>
+            <select style={{background:"rgba(255,255,255,0.08)",border:"1.5px solid rgba(255,255,255,0.15)",color:"#fff",borderRadius:8,padding:"4px 8px",fontSize:12,cursor:"pointer"}}
+              defaultValue="4" onChange={e=>wbStateRef.current.size=parseInt(e.target.value)}>
+              <option value="2">Thin</option>
+              <option value="4">Normal</option>
+              <option value="8">Thick</option>
+              <option value="16">Bold</option>
+            </select>
+            <button className="wb-btn" onClick={()=>{
+              const canvas=canvasRef.current; if(!canvas) return
+              const link=document.createElement("a"); link.download="whiteboard.png"
+              link.href=canvas.toDataURL("image/png"); link.click()
+            }}>💾 Save</button>
+            <button className="wb-btn" style={{marginLeft:"auto"}} onClick={()=>clearWb(true)}>🗑️ Clear All</button>
+          </div>
+          <canvas ref={canvasRef} className="wb-canvas" width={1400} height={500}
+            style={{width:"100%",height:240,background:"#ffffff",display:"block"}}
+            onMouseDown={wbDown} onMouseMove={wbMove} onMouseUp={wbUp} onMouseLeave={wbUp}
+            onTouchStart={wbDown} onTouchMove={wbMove} onTouchEnd={wbUp}
+          />
+        </div>
+      )}
+      </div>{/* end call-left */}
+      {chatOpen && (
+        <div className="chat-panel">
+          <div className="chat-panel-header">
+            <span>💬 Live Chat</span>
+            <span style={{fontSize:11,color:"rgba(255,255,255,0.4)"}}>{messages.length} messages</span>
+          </div>
+          <div className="chat-messages">
+            {messages.length===0 && (
+              <div style={{textAlign:"center",color:"rgba(255,255,255,0.25)",fontSize:12,marginTop:20}}>
+                No messages yet.<br/>Say hello! 👋
+              </div>
+            )}
+            {messages.map((m,i)=>(
+              <div key={i} className={`chat-msg ${m.mine?"mine":"theirs"}`}>
+                {!m.mine && <div className="chat-sender">{m.sender}</div>}
+                <div className="chat-bubble">{m.text}</div>
+                <div className="chat-time">{m.time}</div>
+              </div>
+            ))}
+            <div ref={chatEndRef} />
+          </div>
+          <div className="chat-input-row">
+            <input className="chat-input" value={chatInput} onChange={e=>setChatInput(e.target.value)}
+              placeholder="Type a message…" style={{background:"#1e293b",color:"#fff"}}
+              onKeyDown={e=>e.key==="Enter"&&sendChat()} />
+            <button className="chat-send" onClick={sendChat}>➤</button>
+          </div>
+        </div>
+      )}
+      </div>{/* end call-main */}
+      <div className="call-controls">
+        <div style={{textAlign:"center"}}>
+          <button className={`ctrl-btn ${micOn?"on":"off"}`} onClick={toggleMic}>
+            {micOn?"🎤":"🔇"}
+          </button>
+          <div style={{fontSize:10,color:"rgba(255,255,255,0.5)",marginTop:4}}>{micOn?"Mic On":"Muted"}</div>
+        </div>
+        <div style={{textAlign:"center"}}>
+          <button className={`ctrl-btn ${camOn?"on":"off"}`} onClick={toggleCam}>
+            {camOn?"📷":"📵"}
+          </button>
+          <div style={{fontSize:10,color:"rgba(255,255,255,0.5)",marginTop:4}}>{camOn?"Cam On":"Cam Off"}</div>
+        </div>
+        {!(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) && (
+          <div style={{textAlign:"center"}}>
+            <button className={`ctrl-btn ${screenOn?"off":"on"}`} onClick={toggleScreen}>
+              🖥️
+            </button>
+            <div style={{fontSize:10,color:"rgba(255,255,255,0.5)",marginTop:4}}>{screenOn?"Stop Share":"Share Screen"}</div>
+          </div>
+        )}
+        <div style={{textAlign:"center"}}>
+          <button className={`ctrl-btn ${wbOpen?"off":"on"}`} onClick={()=>setWbOpen(w=>!w)}>
+            📝
+          </button>
+          <div style={{fontSize:10,color:"rgba(255,255,255,0.5)",marginTop:4}}>{wbOpen?"Hide Board":"Whiteboard"}</div>
+        </div>
+        <div style={{textAlign:"center",position:"relative"}}>
+          <button className={`ctrl-btn ${chatOpen?"off":"on"}`} onClick={()=>{ setChatOpen(c=>!c); setUnread(0) }}>
+            💬
+          </button>
+          {unread>0 && !chatOpen && <div className="chat-unread">{unread}</div>}
+          <div style={{fontSize:10,color:"rgba(255,255,255,0.5)",marginTop:4}}>{chatOpen?"Hide Chat":"Chat"}</div>
+        </div>
+        <div style={{textAlign:"center"}}>
+          <button className="ctrl-btn end" onClick={leaveCall}>
+            📵
+          </button>
+          <div style={{fontSize:10,color:"rgba(255,255,255,0.5)",marginTop:4}}>Leave</div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function VideoTile({ participant }) {
+  const videoRef = useRef(null)
+  const audioRef = useRef(null)
+
+  useEffect(()=>{
+    if (participant.videoTrack && videoRef.current) {
+      participant.videoTrack.attach(videoRef.current)
+      return ()=>{ try{ participant.videoTrack.detach(videoRef.current) }catch(e){} }
+    }
+  }, [participant.videoTrack])
+
+  useEffect(()=>{
+    if (participant.audioTrack && audioRef.current && !participant.isLocal) {
+      participant.audioTrack.attach(audioRef.current)
+      return ()=>{ try{ participant.audioTrack.detach(audioRef.current) }catch(e){} }
+    }
+  }, [participant.audioTrack, participant.isLocal])
+
+  return (
+    <div className="video-tile">
+      {participant.videoTrack
+        ? <video ref={videoRef} autoPlay playsInline muted={participant.isLocal} />
+        : <div style={{color:"rgba(255,255,255,0.3)",fontSize:13,textAlign:"center"}}>
+            <div style={{fontSize:40,marginBottom:8}}>👤</div>
+            Camera off
+          </div>
+      }
+      {!participant.isLocal && <audio ref={audioRef} autoPlay playsInline />}
+      <div className="video-tile-name">
+        {participant.isLocal ? `${participant.name} (You)` : participant.name}
+      </div>
+      {participant.audioMuted && <div className="video-tile-muted">🔇</div>}
+    </div>
+  )
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// PHASE 5 — STUDENT DOUBT CLEAR (join a call)
+// Added to existing StudentExamPage or as separate section
+// ═══════════════════════════════════════════════════════════════
+function StudentDoubtClearSection({ studentData }) {
+  const student = studentData?.student || {}
+  const [notifStatus, setNotifStatus] = useState(Notification?.permission || 'default')
+  // Register push notifications
+  useEffect(()=>{
+    if (!student.id || !("serviceWorker" in navigator) || !("PushManager" in window)) return
+    const registerPush = async () => {
+      try {
+        const reg = await navigator.serviceWorker.register("/sw.js")
+        const existing = await reg.pushManager.getSubscription()
+        if (existing) { saveSub(existing, student.id, student.institute_id||0); return }
+        const vapidRes = await fetch(`${API2}/notify/vapid-public-key`).then(r=>r.json())
+        if (!vapidRes.public_key) return
+        const sub = await reg.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(vapidRes.public_key)
+        })
+        saveSub(sub, student.id, student.institute_id||0)
+      } catch(e) { console.log("Push registration:", e.message) }
+    }
+    registerPush()
+  }, [student.id])
+
+  const saveSub = async (sub, sid, iid) => {
+    const j = sub.toJSON()
+    console.log("[Push] Saving subscription for student:", sid, "institute:", iid)
+    console.log("[Push] Endpoint:", j.endpoint?.substring(0,50))
+    const res = await fetch(`${API2}/notify/subscribe`, {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ student_id:sid, institute_id:iid||1, endpoint:j.endpoint, p256dh:j.keys.p256dh, auth:j.keys.auth })
+    })
+    const data = await res.json()
+    console.log("[Push] Save result:", data)
+  }
+
+  const enableNotifications = async () => {
+    if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+      alert("Push notifications not supported in this browser"); return
+    }
+    try {
+      const permission = await Notification.requestPermission()
+      setNotifStatus(permission)
+      if (permission !== "granted") { alert("Please allow notifications to get call alerts"); return }
+      const reg = await navigator.serviceWorker.ready
+      const vapidRes = await fetch(`${API2}/notify/vapid-public-key`).then(r=>r.json())
+      if (!vapidRes.public_key) return
+      const sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(vapidRes.public_key)
+      })
+      await saveSub(sub, student.id, student.institute_id||0)
+      alert("✅ Notifications enabled! You will be notified when a call starts.")
+    } catch(e) { console.error("Push error:", e); alert("Could not enable notifications: " + e.message) }
+  }
+  const batchId = student.batch_id
+  const [groupRoom, setGroupRoom] = useState(null)
+  const [oneRoom, setOneRoom] = useState(null)
+  const [joinCode, setJoinCode] = useState("")
+  const [joining, setJoining] = useState(false)
+  const [callRoom, setCallRoom] = useState(null)  // active call
+  const [callToken, setCallToken] = useState(null)
+
+  useEffect(()=>{
+    if (batchId) {
+      fetch(`${API2}/call/rooms/batch/${batchId}`).then(r=>r.json()).then(r=>setGroupRoom(r.room||null))
+    }
+    if (student.id) {
+      fetch(`${API2}/call/rooms/student/${student.id}`).then(r=>r.json()).then(r=>setOneRoom(r.room||null))
+    }
+    // Poll every 10 seconds for incoming calls
+    const interval = setInterval(()=>{
+      if (batchId) fetch(`${API2}/call/rooms/batch/${batchId}`).then(r=>r.json()).then(r=>setGroupRoom(r.room||null))
+      if (student.id) fetch(`${API2}/call/rooms/student/${student.id}`).then(r=>r.json()).then(r=>setOneRoom(r.room||null))
+    }, 10000)
+    return ()=>clearInterval(interval)
+  }, [batchId, student.id])
+
+  const joinRoom = async (code) => {
+    setJoining(true)
+    try {
+      const res = await fetch(`${API2}/call/token`, {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({ room_code: code.toUpperCase(), participant_name: student.name||"Student" })
+      }).then(r=>r.json())
+      if (res.success) {
+        setCallToken(res.livekit_token)
+        setCallRoom({ room_code: code.toUpperCase(), livekit_url: res.livekit_url })
+      } else {
+        alert(res.detail || "Could not join room")
+      }
+    } catch(e){ alert("Network error") }
+    setJoining(false)
+  }
+
+  // Active call screen
+  if (callRoom && callToken) {
+    return (
+      <div style={{borderRadius:16,overflow:"hidden",marginTop:16}}>
+        <LiveKitRoom
+          token={callToken}
+          serverUrl={"wss://examguru.duckdns.org/livekit"}
+          roomName={callRoom.room_code}
+          participantName={student.name||"Student"}
+          isHost={false}
+          onLeave={()=>{ setCallRoom(null); setCallToken(null) }}
+        />
+      </div>
+    )
+  }
+
+  return (
+    <div style={{marginTop:24}}>
+      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:4}}>
+        <div style={{fontWeight:800,fontSize:15}}>📹 Doubt Clear</div>
+        {notifStatus==="granted" ? (
+          <span style={{fontSize:11,background:"#f0fdf4",color:"#16a34a",border:"1px solid #86efac",borderRadius:100,padding:"3px 10px",fontWeight:700}}>🔔 Notifications On</span>
+        ) : notifStatus==="denied" ? (
+          <span style={{fontSize:11,background:"#fef2f2",color:"#dc2626",border:"1px solid #fecaca",borderRadius:100,padding:"3px 10px",fontWeight:700}}>🔕 Notifications Blocked</span>
+        ) : (
+          <button className="btn btn-secondary" style={{fontSize:11,padding:"4px 12px"}} onClick={enableNotifications}>
+            🔔 Enable Call Alerts
+          </button>
+        )}
+      </div>
+      <div style={{fontSize:12,color:"var(--muted)",marginBottom:16}}>Join a live video session with your teacher</div>
+
+      {/* Incoming 1-to-1 call notification */}
+      {oneRoom && (
+        <div style={{background:"linear-gradient(135deg,#f5f3ff,#ede9fe)",border:"2px solid var(--accent)",borderRadius:16,padding:18,marginBottom:14,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+          <div>
+            <div style={{fontWeight:700,fontSize:14,color:"var(--accent2)"}}>📞 Incoming Call!</div>
+            <div style={{fontSize:12,color:"var(--muted)",marginTop:3}}>{oneRoom.host_name||"Your teacher"} is calling you</div>
+          </div>
+          <button className="btn btn-primary" onClick={()=>joinRoom(oneRoom.room_code)}>
+            {joining?"Joining…":"📹 Join Call"}
+          </button>
+        </div>
+      )}
+
+      {/* Active group call for batch */}
+      {groupRoom && (
+        <div style={{background:"#f0fdf4",border:"2px solid #86efac",borderRadius:16,padding:18,marginBottom:14,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+          <div>
+            <div style={{fontWeight:700,fontSize:14,color:"#16a34a"}}>🟢 Group Call Active!</div>
+            <div style={{fontSize:12,color:"#555",marginTop:3}}>{groupRoom.title||"Your batch has a live session"}</div>
+            <div style={{fontSize:11,color:"#888",marginTop:2}}>Code: <strong>{groupRoom.room_code}</strong></div>
+          </div>
+          <button className="btn btn-success" onClick={()=>joinRoom(groupRoom.room_code)}>
+            {joining?"Joining…":"📹 Join Group Call"}
+          </button>
+        </div>
+      )}
+
+      {/* Manual join by code */}
+      <div className="card">
+        <div className="card-title">🔑 Join by Room Code</div>
+        <div style={{display:"flex",gap:10}}>
+          <input
+            value={joinCode}
+            onChange={e=>setJoinCode(e.target.value.toUpperCase())}
+            placeholder="Enter room code e.g. AB12CD34"
+            style={{fontFamily:"monospace",letterSpacing:3,fontWeight:700}}
+            maxLength={8}
+          />
+          <button className="btn btn-primary" onClick={()=>joinRoom(joinCode)} disabled={joinCode.length<6||joining}>
+            {joining?"…":"Join"}
+          </button>
+        </div>
+        <div style={{fontSize:11,color:"var(--muted)",marginTop:8}}>Ask your teacher for the room code</div>
+      </div>
+    </div>
+  )
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// PHASE 5 — TEACHER MANAGEMENT (in Institute Admin Dashboard)
+// ═══════════════════════════════════════════════════════════════
+function TeacherManagementPage({ state, go }) {
+  const [teachers, setTeachers] = useState([])
+  const [form, setForm] = useState({ name:"", email:"", password:"", subject:"", phone:"" })
+  const [loading, setLoading] = useState(false)
+  const [msg, setMsg] = useState("")
+  const [showForm, setShowForm] = useState(false)
+
+  const load = async () => {
+    const res = await fetch(`${API2}/teacher/list`, { headers: authHeaders() }).then(r=>r.json())
+    setTeachers(res.teachers || [])
+  }
+  useEffect(()=>{ load() },[])
+
+  const register = async () => {
+    setLoading(true); setMsg("")
+    try {
+      const res = await fetch(`${API2}/teacher/register`, {
+        method:"POST",
+        headers: authHeaders(),
+        body: JSON.stringify(form)
+      }).then(r=>r.json())
+      if (res.success) {
+        setMsg("✓ Teacher registered successfully!")
+        setForm({ name:"", email:"", password:"", subject:"", phone:"" })
+        setShowForm(false)
+        load()
+      } else {
+        setMsg("❌ " + (res.detail || "Failed"))
+      }
+    } catch(e){ setMsg("❌ Network error") }
+    setLoading(false)
+  }
+
+  const toggleActive = async (t) => {
+    await fetch(`${API2}/teacher/${t.id}/active`, {
+      method:"PUT", headers: authHeaders(),
+      body: JSON.stringify({ active: !t.active })
+    })
+    load()
+  }
+
+  const deleteTeacher = async (t) => {
+    if (!confirm(`Delete teacher ${t.name}?`)) return
+    await fetch(`${API2}/teacher/${t.id}`, { method:"DELETE", headers: authHeaders() })
+    load()
+  }
+
+  return (
+    <div className="shell">
+      <Sidebar page="teachers" go={go} user={state.user} />
+      <div className="main">
+        <div className="page">
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:24}}>
+            <div>
+              <div style={{fontSize:18,fontWeight:800}}>👩‍🏫 Teachers</div>
+              <div style={{fontSize:13,color:"var(--muted)",marginTop:3}}>Register and manage teachers for your institute</div>
+            </div>
+            <button className="btn btn-primary" onClick={()=>setShowForm(s=>!s)}>
+              {showForm ? "✕ Cancel" : "+ Register Teacher"}
+            </button>
+          </div>
+
+          {msg && (
+            <div style={{background: msg.startsWith("✓")?"#f0fdf4":"#fef2f2", border:`1px solid ${msg.startsWith("✓")?"#86efac":"#fecaca"}`, borderRadius:10, padding:"10px 16px", fontSize:13, marginBottom:16, color: msg.startsWith("✓")?"#16a34a":"#dc2626"}}>
+              {msg}
+            </div>
+          )}
+
+          {showForm && (
+            <div className="card" style={{marginBottom:16}}>
+              <div className="card-title">Register New Teacher</div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Full Name *</label>
+                  <input value={form.name} onChange={e=>setForm(f=>({...f,name:e.target.value}))} placeholder="Rahul Sharma" />
+                </div>
+                <div className="form-group">
+                  <label>Email *</label>
+                  <input type="email" value={form.email} onChange={e=>setForm(f=>({...f,email:e.target.value}))} placeholder="teacher@school.com" />
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Password *</label>
+                  <input type="password" value={form.password} onChange={e=>setForm(f=>({...f,password:e.target.value}))} placeholder="Min 6 characters" />
+                </div>
+                <div className="form-group">
+                  <label>Subject</label>
+                  <input value={form.subject} onChange={e=>setForm(f=>({...f,subject:e.target.value}))} placeholder="e.g. Mathematics" />
+                </div>
+              </div>
+              <div className="form-group">
+                <label>Phone</label>
+                <input value={form.phone} onChange={e=>setForm(f=>({...f,phone:e.target.value}))} placeholder="+91 98765 43210" />
+              </div>
+              <button className="btn btn-primary" onClick={register}
+                disabled={loading||!form.name||!form.email||!form.password}>
+                {loading?"Registering…":"Register Teacher"}
+              </button>
+            </div>
+          )}
+
+          {teachers.length === 0 ? (
+            <div className="card" style={{textAlign:"center",padding:44}}>
+              <div style={{fontSize:40,marginBottom:12}}>👩‍🏫</div>
+              <div style={{fontWeight:700,fontSize:15,marginBottom:8}}>No teachers yet</div>
+              <div style={{fontSize:13,color:"var(--muted)",marginBottom:20}}>Register teachers to give them access to ExamGuru</div>
+              <button className="btn btn-primary" onClick={()=>setShowForm(true)}>+ Register First Teacher</button>
+            </div>
+          ) : (
+            <div className="card">
+              <div className="card-title">All Teachers ({teachers.length})</div>
+              <table style={{width:"100%",borderCollapse:"collapse"}}>
+                <thead>
+                  <tr style={{background:"var(--bg3)"}}>
+                    {["Name","Email","Subject","Phone","Status","Actions"].map(h=>(
+                      <th key={h} style={{padding:"9px 12px",textAlign:"left",fontSize:11,fontWeight:700,color:"var(--muted)",textTransform:"uppercase",letterSpacing:".05em"}}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {teachers.map(t=>(
+                    <tr key={t.id} style={{borderTop:"1px solid var(--border)"}}>
+                      <td style={{padding:"11px 12px",fontSize:13,fontWeight:600}}>{t.name}</td>
+                      <td style={{padding:"11px 12px",fontSize:12,color:"var(--muted)"}}>{t.email}</td>
+                      <td style={{padding:"11px 12px",fontSize:12,color:"var(--muted)"}}>{t.subject||"—"}</td>
+                      <td style={{padding:"11px 12px",fontSize:12,color:"var(--muted)"}}>{t.phone||"—"}</td>
+                      <td style={{padding:"11px 12px"}}>
+                        <span style={{fontSize:11,fontWeight:700,padding:"2px 9px",borderRadius:100,
+                          background:t.active?"#dcfce7":"#fee2e2",color:t.active?"#16a34a":"#dc2626"}}>
+                          {t.active?"Active":"Suspended"}
+                        </span>
+                      </td>
+                      <td style={{padding:"11px 12px"}}>
+                        <div style={{display:"flex",gap:6}}>
+                          <button className="btn btn-secondary" style={{padding:"3px 10px",fontSize:11}} onClick={()=>toggleActive(t)}>
+                            {t.active?"Suspend":"Activate"}
+                          </button>
+                          <button className="btn btn-danger" style={{padding:"3px 10px",fontSize:11}} onClick={()=>deleteTeacher(t)}>
+                            Delete
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// PHASE 6 — CALL HISTORY PAGE
+// ═══════════════════════════════════════════════════════════════
+function CallHistoryPage({ state, go }) {
+  const teacher = state.teacher || {}
+  const [history, setHistory] = useState([])
+  const [selected, setSelected] = useState(null)
+  const [attendance, setAttendance] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(()=>{
+    const token = getTeacherToken() || getToken()
+    fetch(`${API2}/call/history`, { headers:{ Authorization:`Bearer ${token}` } })
+      .then(r=>r.json()).then(r=>{ setHistory(r.history||[]); setLoading(false) })
+  },[])
+
+  const loadAttendance = async (room) => {
+    setSelected(room)
+    const res = await fetch(`${API2}/call/attendance/${room.room_code}`).then(r=>r.json())
+    setAttendance(res.attendance||[])
+  }
+
+  const fmtDuration = (secs) => {
+    if (!secs || secs < 0) return "—"
+    const m = Math.floor(secs/60), s = secs%60
+    return m > 0 ? `${m}m ${s}s` : `${s}s`
+  }
+
+  const fmtDate = (iso) => {
+    if (!iso) return "—"
+    return new Date(iso).toLocaleString("en-IN",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"})
+  }
+
+  const SidebarComp = teacher.id ? TeacherSidebar : Sidebar
+  const sidebarProps = teacher.id
+    ? { page:"callHistory", go, teacher }
+    : { page:"callHistory", go, user:state.user }
+
+  return (
+    <div className="shell">
+      <SidebarComp {...sidebarProps} />
+      <div className="main">
+        <div className="page">
+          <div style={{fontSize:18,fontWeight:800,marginBottom:4}}>📊 Call History</div>
+          <div style={{fontSize:13,color:"var(--muted)",marginBottom:24}}>All video sessions with duration and attendance</div>
+
+          {loading ? (
+            <div style={{textAlign:"center",padding:60,color:"var(--muted)"}}>Loading…</div>
+          ) : history.length === 0 ? (
+            <div className="card" style={{textAlign:"center",padding:52}}>
+              <div style={{fontSize:40,marginBottom:12}}>📞</div>
+              <div style={{fontWeight:700,fontSize:15,marginBottom:8}}>No calls yet</div>
+              <div style={{fontSize:13,color:"var(--muted)"}}>Start a Doubt Clear session to see history here</div>
+            </div>
+          ) : (
+            <div className="card" style={{padding:0,overflow:"hidden"}}>
+              <table className="history-table">
+                <thead>
+                  <tr>
+                    <th>Date & Time</th>
+                    <th>Title</th>
+                    <th>Type</th>
+                    <th>Host</th>
+                    <th>Duration</th>
+                    <th>Participants</th>
+                    <th>Status</th>
+                    <th>Attendance</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {history.map((h,i)=>(
+                    <tr key={i}>
+                      <td style={{color:"var(--muted)",fontSize:12}}>{fmtDate(h.created_at)}</td>
+                      <td style={{fontWeight:600}}>{h.title||h.room_code}</td>
+                      <td>
+                        <span style={{background:h.room_type==="group"?"#ede9fe":"#f0fdf4",color:h.room_type==="group"?"#7c3aed":"#16a34a",fontSize:11,fontWeight:700,padding:"2px 8px",borderRadius:100}}>
+                          {h.room_type==="group"?"👥 Group":"👤 1-to-1"}
+                        </span>
+                      </td>
+                      <td style={{fontSize:12}}>{h.host_name||"—"}</td>
+                      <td><span className="duration-badge">⏱ {fmtDuration(h.duration_seconds)}</span></td>
+                      <td style={{textAlign:"center",fontWeight:700}}>{h.participant_count||0}</td>
+                      <td>
+                        <span style={{fontSize:11,fontWeight:700,padding:"2px 8px",borderRadius:100,
+                          background:h.active?"#fef3c7":"#f0fdf4",color:h.active?"#92400e":"#16a34a"}}>
+                          {h.active?"🟡 Active":"✅ Ended"}
+                        </span>
+                      </td>
+                      <td>
+                        <button className="btn btn-secondary" style={{padding:"3px 10px",fontSize:11}}
+                          onClick={()=>loadAttendance(h)}>View</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* Attendance modal */}
+          {selected && (
+            <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.5)",zIndex:999,display:"flex",alignItems:"center",justifyContent:"center",padding:24}}>
+              <div style={{background:"#fff",borderRadius:20,padding:32,width:"100%",maxWidth:500,maxHeight:"80vh",overflow:"auto",boxShadow:"0 24px 80px rgba(0,0,0,0.2)"}}>
+                <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20}}>
+                  <div>
+                    <div style={{fontWeight:800,fontSize:16}}>Attendance — {selected.title||selected.room_code}</div>
+                    <div style={{fontSize:12,color:"var(--muted)",marginTop:3}}>
+                      {fmtDate(selected.created_at)} · {fmtDuration(selected.duration_seconds)}
+                    </div>
+                  </div>
+                  <button className="btn btn-secondary" style={{padding:"4px 12px"}} onClick={()=>setSelected(null)}>✕ Close</button>
+                </div>
+                {attendance.length===0 ? (
+                  <div style={{textAlign:"center",padding:32,color:"var(--muted)"}}>No attendance records yet</div>
+                ) : attendance.map((a,i)=>(
+                  <div key={i} className="attendance-row">
+                    <div style={{width:32,height:32,borderRadius:"50%",background:a.role==="teacher"?"#ede9fe":"#f0fdf4",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,flexShrink:0}}>
+                      {a.role==="teacher"?"👩‍🏫":"👤"}
+                    </div>
+                    <div style={{flex:1}}>
+                      <div style={{fontWeight:600,fontSize:13}}>{a.participant_name}</div>
+                      <div style={{fontSize:11,color:"var(--muted)",marginTop:2}}>
+                        Joined {fmtDate(a.joined_at)} · {fmtDuration(a.duration_seconds)}
+                      </div>
+                    </div>
+                    <span className="att-present">✓ Joined</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
 const PAGES = {
   login:LoginPage, superadmin:SuperadminPage, dashboard:DashboardPage, upload:UploadPage,
   questionType:QuestionTypePage, examConfig:ExamConfigPage,
@@ -4137,6 +5462,12 @@ const PAGES = {
   fees:FeesPage,
   // Phase 4
   billing:BillingPage,
+  // Phase 5 — Teachers & Calls
+  teacherLogin:TeacherLoginPage,
+  teacherDashboard:TeacherDashboardPage,
+  doubtClear:DoubtClearPage,
+  teachers:TeacherManagementPage,
+  callHistory:CallHistoryPage,
 }
 
 export default function App() {
@@ -4154,6 +5485,19 @@ export default function App() {
 
   // Restore login from localStorage on page load/refresh
   useEffect(() => {
+    // Check teacher token first
+    const teacherToken = getTeacherToken()
+    if (teacherToken) {
+      fetch(`${API2}/teacher/me`, { headers: { Authorization: `Bearer ${teacherToken}` } })
+        .then(r => r.json())
+        .then(data => {
+          if (data.teacher) {
+            updateState({ teacher: data.teacher, teacherToken })
+            setPage("teacherDashboard")
+            return
+          } else { clearTeacherToken() }
+        }).catch(() => clearTeacherToken())
+    }
     const token = getToken()
     if (token) {
       fetch("/auth/me", { headers: { Authorization: `Bearer ${token}` } })

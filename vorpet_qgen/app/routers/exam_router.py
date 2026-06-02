@@ -5,7 +5,7 @@ Phase 3: Admin routes now require JWT (institute isolation via institute_id)
 Existing Phase 1 endpoints (main.py) are NOT touched
 """
 
-from fastapi import APIRouter, HTTPException, Form, Depends
+from fastapi import APIRouter, HTTPException, Form, Depends, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import Optional, List
@@ -33,6 +33,26 @@ from app.services.db_service import (
 from app.dependencies import get_current_institute
 
 router = APIRouter(prefix="/api/v2", tags=["Phase 2+3 — OMR Exam"])
+
+async def get_institute_id_from_request(request) -> int:
+    """Extract institute_id from either institute JWT or teacher JWT."""
+    from app.services.auth_service import decode_token
+    from app.services.db_service import database
+    auth = request.headers.get("Authorization", "")
+    if not auth.startswith("Bearer "):
+        return None
+    payload = decode_token(auth.split(" ", 1)[1])
+    if not payload:
+        return None
+    role = payload.get("role", "institute")
+    if role == "teacher":
+        # Teacher token has institute_id directly in payload
+        return int(payload.get("institute_id", 0))
+    else:
+        # Institute token uses sub as institute_id
+        return int(payload.get("sub", 0))
+
+
 
 
 def safe_dict(row) -> dict:
@@ -248,9 +268,9 @@ async def api_bulk_create_students(
 
 
 @router.get("/student/list")
-async def api_list_students(institute: dict = Depends(get_current_institute)):
+async def api_list_students(request: Request, institute: dict = Depends(get_current_institute)):
     from app.services.db_service import database
-    iid = institute["id"]
+    iid = await get_institute_id_from_request(request) or institute["id"]
     try:
         await database.execute("ALTER TABLE students ADD COLUMN IF NOT EXISTS admission_date DATE")
     except: pass
@@ -497,7 +517,7 @@ async def api_public_exam_results(exam_id: int):
     rows = await database.fetch_all("""
         SELECT ea.id as exam_access_id, s.name as student_name,
                er.marks_obtained, er.total_marks, er.percentage,
-               er.total_correct, er.total_wrong, er.total_skipped,
+               er.correct_answers, er.wrong_answers, er.skipped,
                er.time_taken_seconds, er.submitted_at, er.auto_submitted
         FROM exam_access ea
         JOIN students s ON s.id = ea.student_id
@@ -641,9 +661,9 @@ async def api_create_batch(
 
 
 @router.get("/batch/list")
-async def api_list_batches(institute: dict = Depends(get_current_institute)):
+async def api_list_batches(request: Request, institute: dict = Depends(get_current_institute)):
     from app.services.db_service import database
-    iid = institute["id"]
+    iid = await get_institute_id_from_request(request) or institute["id"]
     try:
         await database.execute("ALTER TABLE batches ADD COLUMN IF NOT EXISTS default_fee NUMERIC(10,2) DEFAULT 0")
     except: pass

@@ -1,9 +1,11 @@
-﻿version: "3.9"
+version: "3.9"
 
 services:
   api:
     build: ./vorpet_qgen
     container_name: vorpet_api
+    env_file:
+      - .env
     ports:
       - "8002:8000"
     environment:
@@ -14,12 +16,16 @@ services:
       - EMAIL_PORT=465
       - EMAIL_USER=info@vorpet.com
       - EMAIL_PASS=${EMAIL_PASS}
-      - EMAIL_FROM=Vorpet <info@vorpet.com>
+      - LIVEKIT_URL=ws://187.127.150.252:7880
+      - LIVEKIT_API_KEY=${LIVEKIT_API_KEY}
+      - LIVEKIT_API_SECRET=${LIVEKIT_API_SECRET}
     volumes:
       - ./vorpet_qgen/uploads:/app/uploads
       - ./vorpet_qgen/outputs:/app/outputs
       - ./vorpet_qgen/static:/app/static
     restart: unless-stopped
+    depends_on:
+      - livekit
 
   frontend:
     build: ./vorpet_frontend
@@ -28,4 +34,16 @@ services:
       - "3030:5173"
     depends_on:
       - api
+    restart: unless-stopped
+
+  livekit:
+    image: livekit/livekit-server:latest
+    container_name: vorpet_livekit
+    ports:
+      - "7880:7880"
+      - "7881:7881"
+      - "50000-50100:50000-50100/udp"
+    command: --config /etc/livekit.yaml
+    volumes:
+      - ./livekit.yaml:/etc/livekit.yaml
     restart: unless-stopped
