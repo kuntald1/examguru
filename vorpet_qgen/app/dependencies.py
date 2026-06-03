@@ -37,9 +37,37 @@ async def get_current_institute(
         raise credentials_exception
 
     payload = decode_token(credentials.credentials)
+    print(f"AUTH payload={payload}", flush=True)
     if not payload:
         raise credentials_exception
 
+    role = payload.get("role", "institute")
+    print(f"AUTH role={role}", flush=True)
+
+    # ── Teacher token — fetch their institute ──────────────────
+    print(f"AUTH entering role={role} block", flush=True)
+    if role == "teacher":
+        teacher_id = payload.get("sub")
+        institute_id = payload.get("institute_id")
+        if not teacher_id or not institute_id:
+            raise credentials_exception
+        # Verify teacher is active
+        teacher = await database.fetch_one(
+            "SELECT id, active FROM teachers WHERE id = :id",
+            values={"id": int(teacher_id)},
+        )
+        if not teacher or not teacher["active"]:
+            raise credentials_exception
+        # Return institute info
+        row = await database.fetch_one(
+            "SELECT id, name, email, plan, active FROM institutes WHERE id = :id",
+            values={"id": int(institute_id)},
+        )
+        if not row:
+            raise credentials_exception
+        return dict(row)
+
+    # ── Institute token (default) ──────────────────────────────
     institute_id = payload.get("sub")
     if not institute_id:
         raise credentials_exception

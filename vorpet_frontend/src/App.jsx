@@ -387,8 +387,8 @@ function DashboardPage({ state, go }) {
 
   useEffect(()=>{
     Promise.all([
-      p2get("/exam/list"), p2get("/student/list"), p2get("/batch/list"),
-      p2get("/fees/monthly/summary"),
+      mGet("/api/v2/exam/list"), mGet("/api/v2/student/list"), mGet("/api/v2/batch/list"),
+      mGet("/api/v2/fees/monthly/summary"),
       fetch("/api/usage", {headers: mixedHeaders()}).then(r=>r.json()),
     ])
     .then(([e, s, b, f, u])=>{
@@ -1186,10 +1186,10 @@ const authHeaders = () => {
            : { "Content-Type": "application/json" }
 }
 
-const p2get  = (path) => fetch(`${API2}/api/v2${path}`, { headers: authHeaders() }).then(r=>r.json())
-const p2post = (path,body) => fetch(`${API2}/api/v2${path}`, { method:"POST", headers: authHeaders(), body:JSON.stringify(body) }).then(r=>r.json())
-const p2put  = (path,body) => fetch(`${API2}/api/v2${path}`, { method:"PUT",  headers: authHeaders(), body:JSON.stringify(body) }).then(r=>r.json())
-const p2del  = (path)      => fetch(`${API2}/api/v2${path}`, { method:"DELETE", headers: authHeaders() }).then(r=>r.json())
+const p2get  = (path) => fetch(`${API2}/api/v2${path}`, { headers: mixedHeaders() }).then(r=>r.json())
+const p2post = (path,body) => fetch(`${API2}/api/v2${path}`, { method:"POST", headers: mixedHeaders(), body:JSON.stringify(body) }).then(r=>r.json())
+const p2put  = (path,body) => fetch(`${API2}/api/v2${path}`, { method:"PUT",  headers: mixedHeaders(), body:JSON.stringify(body) }).then(r=>r.json())
+const p2del  = (path)      => fetch(`${API2}/api/v2${path}`, { method:"DELETE", headers: mixedHeaders() }).then(r=>r.json())
 
 const saGet  = (path) => fetch(`${API2}${path}`, { headers: authHeaders() }).then(r=>r.json())
 const saPost = (path,body) => fetch(`${API2}${path}`, { method:"POST", headers: authHeaders(), body:JSON.stringify(body) }).then(r=>r.json())
@@ -1212,7 +1212,8 @@ const teacherHeaders = () => {
 const tGet  = (path) => fetch(`${API2}${path}`, { headers: teacherHeaders() }).then(r=>r.json())
 const tPost = (path, body) => fetch(`${API2}${path}`, { method:"POST", headers: teacherHeaders(), body: JSON.stringify(body) }).then(r=>r.json())
 const mixedHeaders = () => { const t = getTeacherToken() || getToken(); return t ? { "Authorization": `Bearer ${t}`, "Content-Type": "application/json" } : { "Content-Type": "application/json" } }
-const mGet = (path) => fetch(`${API2}${path}`, { headers: mixedHeaders() }).then(r=>r.json())
+const mGet  = (path) => fetch(`${API2}${path}`, { headers: mixedHeaders() }).then(r=>r.json())
+const mPost = (path, body) => fetch(`${API2}${path}`, { method:"POST", headers: mixedHeaders(), body: JSON.stringify(body) }).then(r=>r.json())
 
 
 function PDFExportPage({ state, updateState, go }) {
@@ -1234,7 +1235,7 @@ function PDFExportPage({ state, updateState, go }) {
   const examName = `${String(now.getDate()).padStart(2,"0")}_${months[now.getMonth()]}_${String(now.getFullYear()).slice(2)}_${examSeq}`
 
   useEffect(()=>{
-    p2get("/batch/list").then(d=>setBatches(d.batches||[]))
+    mGet("/api/v2/batch/list").then(d=>setBatches(d.batches||[]))
   },[])
 
   const [examDuration, setExamDuration] = useState(state.examConfig?.totalTime||60)
@@ -1309,7 +1310,7 @@ function PDFExportPage({ state, updateState, go }) {
         negative_marks: cfg.negativeValue || 0
       }))
 
-      const examRes = await p2post("/exam/create", {
+      const examRes = await mPost("/api/v2/exam/create", {
         school_name: cfg.schoolName || "",
         class_name: cfg.className || "",
         subject: `${cfg.subject||"গণিত"} [${examName}]`,
@@ -1320,7 +1321,7 @@ function PDFExportPage({ state, updateState, go }) {
       if(!examRes.exam_id) { setMsg("⚠ Failed to save: "+(examRes.detail||"Unknown")); setSaving(false); return }
 
       // 2. Publish to batch
-      const pubRes = await p2post(`/exam/${examRes.exam_id}/publish`, {batch_id: parseInt(selBatch)})
+      const pubRes = await mPost(`/api/v2/exam/${examRes.exam_id}/publish`, {batch_id: parseInt(selBatch)})
       if(!pubRes.success) { setMsg("⚠ Saved but failed to publish: "+(pubRes.detail||"")); setSaving(false); return }
 
       setSavedExamId(examRes.exam_id)
@@ -1485,7 +1486,7 @@ function DownloadPDFButton({ exam }) {
     setLoading(true)
     try {
       // Fetch full exam questions from DB
-      const full = await p2get(`/exam/${exam.id}/full`)
+      const full = await mGet(`/api/v2/exam/${exam.id}/full`)
       const qs = full.questions || []
       const fd = new FormData()
       fd.append("language", exam.language || "bengali")
@@ -1544,7 +1545,7 @@ function ExamDetailPage({ state, go }) {
 
   const load = async () => {
     setLoading(true)
-    const [full, bd] = await Promise.all([p2get(`/exam/${examId}/full`), p2get("/batch/list")])
+    const [full, bd] = await Promise.all([mGet(`/api/v2/exam/${examId}/full`), mGet("/api/v2/batch/list")])
     const validQs = (full.questions||[]).filter(q => q.question_text && q.question_text.trim().length > 0)
     setExam(full.exam); setQuestions(validQs); setAssignedBatches(full.assigned_batches||[])
     setBatches(bd.batches||[])
@@ -1559,7 +1560,7 @@ function ExamDetailPage({ state, go }) {
     setSaving(s=>({...s,[qid]:true}))
     const q = edits[qid]
     await fetch(`/api/v2/question/${qid}`, {
-      method:"PUT", headers:authHeaders(),
+      method:"PUT", headers:mixedHeaders(),
       body: JSON.stringify({
         question_text: q.question_text, option_a: q.option_a,
         option_b: q.option_b, option_c: q.option_c, option_d: q.option_d,
@@ -1587,7 +1588,7 @@ function ExamDetailPage({ state, go }) {
         }
         setEdits(e=>({...e,[qid]:updated}))
         await fetch(`/api/v2/question/${qid}`, {
-          method:"PUT", headers:authHeaders(),
+          method:"PUT", headers:mixedHeaders(),
           body: JSON.stringify({
             option_a: updated.option_a, option_b: updated.option_b,
             option_c: updated.option_c, option_d: updated.option_d,
@@ -1625,14 +1626,14 @@ function ExamDetailPage({ state, go }) {
   }
 
   const unassignBatch = async (batchId) => {
-    await fetch(`/api/v2/exam/${examId}/batch/${batchId}`, {method:"DELETE", headers:authHeaders()})
+    await fetch(`/api/v2/exam/${examId}/batch/${batchId}`, {method:"DELETE", headers:mixedHeaders()})
     setMsg("✓ Batch unassigned"); load()
   }
 
   const assignToBatch = async () => {
     if(!assignBatch) return
     const res = await fetch(`/api/v2/exam/${examId}/publish`, {
-      method:"POST", headers:authHeaders(),
+      method:"POST", headers:mixedHeaders(),
       body: JSON.stringify({batch_id: parseInt(assignBatch)})
     }).then(r=>r.json())
     if(res.success) { setMsg("✓ Assigned to batch!"); setAssignBatch(""); load() }
@@ -1802,13 +1803,13 @@ function OMRExamsPage({ state, go }) {
 
   const load = async () => {
     setLoading(true)
-    const [ed, bd] = await Promise.all([p2get("/exam/list"), p2get("/batch/list")])
+    const [ed, bd] = await Promise.all([mGet("/api/v2/exam/list"), mGet("/api/v2/batch/list")])
     const examList = ed.exams||[]
     setExams(examList); setBatches(bd.batches||[])
     // Load assigned batches for each exam
     const batchMap = {}
     await Promise.all(examList.map(async e => {
-      const full = await p2get(`/exam/${e.id}/full`)
+      const full = await mGet(`/api/v2/exam/${e.id}/full`)
       batchMap[e.id] = full.assigned_batches || []
     }))
     setExamBatches(batchMap)
@@ -1828,19 +1829,19 @@ function OMRExamsPage({ state, go }) {
     if(!form.school_name||!form.class_name||!form.subject) return setMsg("Fill all exam details")
     for(const q of questions){ if(!q.question_text||!q.option_a||!q.option_b||!q.option_c||!q.option_d) return setMsg("All question fields required") }
     setCreating(true); setMsg("")
-    const res = await p2post("/exam/create",{...form,questions})
+    const res = await mPost("/api/v2/exam/create",{...form,questions})
     if(res.exam_id){ setMsg("✓ Exam created! ID: "+res.exam_id); setShowCreate(false); load() }
     else setMsg("Error: "+(res.detail||"Unknown"))
     setCreating(false)
   }
 
-  const activate = async (id) => { await p2post(`/exam/${id}/activate`,{}); load() }
+  const activate = async (id) => { await mPost(`/api/v2/exam/${id}/activate`,{}); load() }
 
   const closeExam = (e) => {
     setConfirm({
       title: "Close Exam?",
       message: `Are you sure you want to close "${e.subject}"? Students will no longer be able to submit answers. This cannot be undone.`,
-      onConfirm: async () => { setConfirm(null); await p2post(`/exam/${e.id}/close`,{}); load() },
+      onConfirm: async () => { setConfirm(null); await mPost(`/api/v2/exam/${e.id}/close`,{}); load() },
       onCancel: () => setConfirm(null),
       confirmLabel: "Yes, Close Exam",
       danger: true
@@ -1851,12 +1852,12 @@ function OMRExamsPage({ state, go }) {
     const batchId = assignBatch[examId]
     if(!batchId) return setMsg("Select a batch first")
     setAssigning(a=>({...a,[examId]:true}))
-    const res = await p2post(`/exam/${examId}/publish`, {batch_id: parseInt(batchId)})
+    const res = await mPost(`/api/v2/exam/${examId}/publish`, {batch_id: parseInt(batchId)})
     if(res.success) {
       setMsg("✓ Exam assigned to batch!")
       setAssignBatch(a=>({...a,[examId]:""}))
       // Refresh this exam's batch list
-      const full = await p2get(`/exam/${examId}/full`)
+      const full = await mGet(`/api/v2/exam/${examId}/full`)
       setExamBatches(prev=>({...prev,[examId]: full.assigned_batches||[]}))
     } else setMsg("Error: "+(res.detail||"Unknown"))
     setAssigning(a=>({...a,[examId]:false}))
@@ -2001,7 +2002,7 @@ function StudentsPage({ state, go }) {
 
   const load = async () => {
     setLoading(true)
-    const [sd, bd] = await Promise.all([p2get("/student/list"), p2get("/batch/list")])
+    const [sd, bd] = await Promise.all([mGet("/api/v2/student/list"), mGet("/api/v2/batch/list")])
     setStudents(sd.students||[]); setBatches(bd.batches||[])
     setLoading(false)
   }
@@ -2012,16 +2013,16 @@ function StudentsPage({ state, go }) {
     if(!form.roll_no) return setMsg("Roll No is required")
     if(!form.password) return setMsg("Password is required for student login")
     // Create student
-    const res = await p2post("/student/create", {
+    const res = await mPost("/api/v2/student/create", {
       name:form.name, roll_no:form.roll_no,
       batch: batches.find(b=>b.id==form.batch_id)?.name||"",
       school_name:form.school_name, email:form.email, phone:form.phone, admission_date:form.admission_date
     })
     if(!res.student_id) return setMsg("Error: "+(res.detail||"Unknown"))
     // Set password
-    await p2post("/student/set-password", {student_id: res.student_id, password: form.password})
+    await mPost("/api/v2/student/set-password", {student_id: res.student_id, password: form.password})
     // Add to batch if selected
-    if(form.batch_id) await p2post(`/batch/${form.batch_id}/students`, {student_ids:[res.student_id]})
+    if(form.batch_id) await mPost(`/api/v2/batch/${form.batch_id}/students`, {student_ids:[res.student_id]})
     setMsg("✓ Student added with password!"); setForm(emptyForm); setShowAdd(false); load()
   }
 
@@ -2029,7 +2030,7 @@ function StudentsPage({ state, go }) {
     if(!editStudent?.name) return setMsg("Name is required")
     // Update student details
     await fetch(`/api/v2/student/${s.id}`, {
-      method:"PUT", headers:authHeaders(),
+      method:"PUT", headers:mixedHeaders(),
       body: JSON.stringify({
         name: editStudent.name, roll_no: editStudent.roll_no,
         phone: editStudent.phone, school_name: editStudent.school_name,
@@ -2037,7 +2038,7 @@ function StudentsPage({ state, go }) {
         batch_id: editStudent.batch_id
       })
     })
-    if(editStudent.newPwd) await p2post("/student/set-password", {student_id: s.id, password: editStudent.newPwd})
+    if(editStudent.newPwd) await mPost("/api/v2/student/set-password", {student_id: s.id, password: editStudent.newPwd})
     setMsg("✓ Student updated!"); setEditStudent(null); load()
   }
 
@@ -2205,7 +2206,7 @@ function AssignStudentsPage({ state, go }) {
   const [msg, setMsg] = useState("")
 
   useState(()=>{
-    Promise.all([p2get(`/exam/${examId}`),p2get("/student/list"),p2get(`/exam/${examId}/codes`)]).then(([e,s,c])=>{
+    Promise.all([mGet(`/api/v2/exam/${examId}`),mGet("/api/v2/student/list"),mGet(`/api/v2/exam/${examId}/codes`)]).then(([e,s,c])=>{
       setExam(e.exam); setStudents(s.students||[]); setCodes(c.codes||[]); setLoading(false)
     })
   },[])
@@ -2215,7 +2216,7 @@ function AssignStudentsPage({ state, go }) {
   const assign = async () => {
     if(!selected.length) return setMsg("Select at least one student")
     setAssigning(true)
-    const res = await p2post("/exam/assign",{exam_id:examId,student_ids:selected,expires_hours:48})
+    const res = await mPost("/api/v2/exam/assign",{exam_id:examId,student_ids:selected,expires_hours:48})
     if(res.codes){ setCodes([...codes,...res.codes]); setSelected([]); setMsg(`✓ ${res.assigned} code(s) generated!`) }
     else setMsg("Error: "+(res.detail||"Unknown"))
     setAssigning(false)
@@ -2291,12 +2292,12 @@ function OMRResultsPage({ state, go }) {
   const loadResults = async (eid) => {
     if(!eid) return
     setLoading(true); setExpandedStudent(null); setStudentDetail(null)
-    const d = await p2get(`/results/${eid}`)
+    const d = await mGet(`/api/v2/results/${eid}`)
     setData(d); setLoading(false)
   }
 
   useEffect(()=>{
-    Promise.all([p2get("/exam/list"), p2get("/batch/list")]).then(([ed, bd])=>{
+    Promise.all([mGet("/api/v2/exam/list"), mGet("/api/v2/batch/list")]).then(([ed, bd])=>{
       setExams(ed.exams||[]); setBatches(bd.batches||[])
       if(selExam){ loadResults(selExam) } else { setLoading(false) }
     })
@@ -2305,7 +2306,7 @@ function OMRResultsPage({ state, go }) {
   const loadStudentDetail = async (r) => {
     if(expandedStudent===r.exam_access_id) { setExpandedStudent(null); return }
     setExpandedStudent(r.exam_access_id); setDetailLoading(true)
-    const d = await p2get(`/results/${selExam}/student/${r.exam_access_id}`)
+    const d = await mGet(`/api/v2/results/${selExam}/student/${r.exam_access_id}`)
     setStudentDetail(d); setDetailLoading(false)
   }
 
@@ -2343,14 +2344,14 @@ function OMRResultsPage({ state, go }) {
             {/* Export buttons */}
             {selExam && (
               <div style={{display:"flex",gap:8,marginTop:14,paddingTop:14,borderTop:"1px solid var(--border)"}}>
-                <a href={`/export/results/${selExam}/excel`}
+                <a href={`/api/v2/export/results/${selExam}/excel`}
                   download
                   className="btn btn-secondary"
                   style={{fontSize:12,padding:"6px 14px",textDecoration:"none"}}
                   onClick={e=>{ const t=e.currentTarget; const orig=t.className; t.style.opacity="0.6"; setTimeout(()=>t.style.opacity="1",1500) }}>
                   📊 Download Excel
                 </a>
-                <a href={`/export/results/${selExam}/pdf`}
+                <a href={`/api/v2/export/results/${selExam}/pdf`}
                   download
                   className="btn btn-secondary"
                   style={{fontSize:12,padding:"6px 14px",textDecoration:"none"}}
@@ -2564,13 +2565,13 @@ function BatchesPage({ state, go }) {
 
   const load = async () => {
     setLoading(true)
-    const [bd, sd] = await Promise.all([p2get("/batch/list"), p2get("/student/list")])
+    const [bd, sd] = await Promise.all([mGet("/api/v2/batch/list"), mGet("/api/v2/student/list")])
     setBatches(bd.batches||[]); setStudents(sd.students||[])
     setLoading(false)
   }
 
   const loadBatch = async (b) => {
-    const d = await p2get(`/batch/${b.id}`)
+    const d = await mGet(`/api/v2/batch/${b.id}`)
     setSelBatch(d.batch); setBatchStudents(d.students||[]); setSelStudents([])
     setEditName(d.batch?.name||""); setEditClass(d.batch?.class_name||"")
     setEditingName(false)
@@ -2582,7 +2583,7 @@ function BatchesPage({ state, go }) {
 
   const createBatch = async () => {
     if(!form.name||!form.class_name) return setMsg("Batch name and class are required")
-    const res = await p2post("/batch/create", {...form, school_name:"", subject:""})
+    const res = await mPost("/api/v2/batch/create", {...form, school_name:"", subject:""})
     if(res.batch_id){ setMsg("✓ Batch created!"); setShowCreate(false); setForm({name:"",class_name:""}); load() }
     else setMsg("Error: "+(res.detail||"Unknown"))
   }
@@ -2590,7 +2591,7 @@ function BatchesPage({ state, go }) {
   const renameBatch = async () => {
     if(!editName||!editClass) return setMsg("Name and class required")
     const res = await fetch(`/api/v2/batch/${selBatch.id}`, {
-      method:"PUT", headers:authHeaders(),
+      method:"PUT", headers:mixedHeaders(),
       body: JSON.stringify({name:editName, class_name:editClass})
     }).then(r=>r.json())
     if(res.success) { setMsg("✓ Batch renamed!"); setEditingName(false); load(); setSelBatch({...selBatch,name:editName,class_name:editClass}) }
@@ -2604,12 +2605,12 @@ function BatchesPage({ state, go }) {
     const month = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`
     // Save as batch default fee
     await fetch(`/api/v2/batch/${selBatch.id}`, {
-      method:"PUT", headers:authHeaders(),
+      method:"PUT", headers:mixedHeaders(),
       body: JSON.stringify({name:selBatch.name, class_name:selBatch.class_name, default_fee:parseFloat(batchFee)})
     })
     // Set for all students this month
     for(const s of batchStudents) {
-      await p2post("/fees/monthly/set", {student_id:s.id, month, amount:parseFloat(batchFee), note:`${selBatch.name} monthly fee`})
+      await mPost("/api/v2/fees/monthly/set", {student_id:s.id, month, amount:parseFloat(batchFee), note:`${selBatch.name} monthly fee`})
     }
     setSettingFee(false)
     setMsg(`✓ Fee ₹${batchFee}/month saved as default for ${selBatch.name}! Applied to ${batchStudents.length} students for ${month}.`)
@@ -2619,12 +2620,12 @@ function BatchesPage({ state, go }) {
 
   const addStudents = async () => {
     if(!selBatch||!selStudents.length) return
-    const res = await p2post(`/batch/${selBatch.id}/students`, {student_ids: selStudents})
+    const res = await mPost(`/api/v2/batch/${selBatch.id}/students`, {student_ids: selStudents})
     if(res.success){ setMsg("✓ "+selStudents.length+" student(s) added!"); setSelStudents([]); loadBatch(selBatch) }
   }
 
   const removeStudent = async (studentId) => {
-    await fetch(`/api/v2/batch/${selBatch.id}/students/${studentId}`, {method:"DELETE", headers:authHeaders()})
+    await fetch(`/api/v2/batch/${selBatch.id}/students/${studentId}`, {method:"DELETE", headers:mixedHeaders()})
     loadBatch(selBatch)
   }
 
@@ -3241,7 +3242,7 @@ function FeesPage({ state, go }) {
 
   const load = async () => {
     setLoading(true)
-    const [s, b, f] = await Promise.all([p2get("/student/list"), p2get("/batch/list"), p2get("/fees/monthly")])
+    const [s, b, f] = await Promise.all([mGet("/api/v2/student/list"), mGet("/api/v2/batch/list"), mGet("/api/v2/fees/monthly")])
     const studentList = s.students||[]
     const batchList = b.batches||[]
     const feeList = f.fees||[]
@@ -3288,7 +3289,7 @@ function FeesPage({ state, go }) {
       ensureMonthFees(selMonth, studentList, batchList, feeList).then(changed=>{ if(changed) load() })
     })
     // Load outstanding dues
-    p2get("/fees/outstanding").then(d=>setOutstanding(d))
+    mGet("/api/v2/fees/outstanding").then(d=>setOutstanding(d))
   },[])
 
   // When month changes, ensure fees exist for that month
@@ -3331,17 +3332,17 @@ function FeesPage({ state, go }) {
   const notSet = filteredStudents.filter(s=>!feeMap[s.id]).length
 
   const saveFee = async () => {
-    await p2post("/fees/monthly/set", {student_id:editModal.student_id, month:selMonth, amount:parseFloat(editForm.amount)||0, note:editForm.note})
+    await mPost("/api/v2/fees/monthly/set", {student_id:editModal.student_id, month:selMonth, amount:parseFloat(editForm.amount)||0, note:editForm.note})
     setEditModal(null); setMsg("✓ Fee set for "+editModal.name+" — "+months.find(m=>m.value===selMonth)?.label); load()
   }
 
   const payFee = async () => {
-    await p2post("/fees/monthly/pay", {student_id:payModal.student_id, month:selMonth, paid:parseFloat(payAmount)||0})
+    await mPost("/api/v2/fees/monthly/pay", {student_id:payModal.student_id, month:selMonth, paid:parseFloat(payAmount)||0})
     setPayModal(null); setMsg("✓ Payment recorded!"); load()
   }
 
   const deleteFee = async (sid) => {
-    await fetch(`/api/v2/fees/monthly/${sid}/${selMonth}`, {method:"DELETE", headers:authHeaders()})
+    await fetch(`/api/v2/fees/monthly/${sid}/${selMonth}`, {method:"DELETE", headers:mixedHeaders()})
     setMsg("✓ Fee record deleted!"); load()
   }
 
@@ -3470,9 +3471,9 @@ function FeesPage({ state, go }) {
                       <button className="btn btn-primary" style={{padding:"4px 14px",fontSize:12}}
                         onClick={async()=>{
                           const studentFees = fees.filter(f=>Number(f.student_id)===Number(s.student_id)&&parseFloat(f.amount)>parseFloat(f.paid||0))
-                          for(const f of studentFees) await p2post("/fees/monthly/pay",{student_id:s.student_id,month:f.month,paid:parseFloat(f.amount)})
+                          for(const f of studentFees) await mPost("/api/v2/fees/monthly/pay",{student_id:s.student_id,month:f.month,paid:parseFloat(f.amount)})
                           setMsg(`✓ All dues cleared for ${s.student_name}!`)
-                          load(); p2get("/fees/outstanding").then(d=>setOutstanding(d))
+                          load(); mGet("/api/v2/fees/outstanding").then(d=>setOutstanding(d))
                         }}>
                         💳 Clear All Dues
                       </button>
@@ -3503,7 +3504,7 @@ function FeesPage({ state, go }) {
                     for(const s of unpaid) {
                       const f=feeMap[s.id]
                       const due=Math.max(0,parseFloat(f.amount)-parseFloat(f.paid))
-                      await p2post("/fees/monthly/pay",{student_id:s.id,month:selMonth,paid:parseFloat(f.amount)})
+                      await mPost("/api/v2/fees/monthly/pay",{student_id:s.id,month:selMonth,paid:parseFloat(f.amount)})
                     }
                     setMsg(`✓ Marked all ${unpaid.length} students as paid!`); load()
                   }}>
@@ -5166,7 +5167,7 @@ function TeacherManagementPage({ state, go }) {
   const [showForm, setShowForm] = useState(false)
 
   const load = async () => {
-    const res = await fetch(`${API2}/teacher/list`, { headers: authHeaders() }).then(r=>r.json())
+    const res = await fetch(`${API2}/teacher/list`, { headers: mixedHeaders() }).then(r=>r.json())
     setTeachers(res.teachers || [])
   }
   useEffect(()=>{ load() },[])
@@ -5176,7 +5177,7 @@ function TeacherManagementPage({ state, go }) {
     try {
       const res = await fetch(`${API2}/teacher/register`, {
         method:"POST",
-        headers: authHeaders(),
+        headers: mixedHeaders(),
         body: JSON.stringify(form)
       }).then(r=>r.json())
       if (res.success) {

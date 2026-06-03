@@ -180,9 +180,14 @@ async def api_create_exam(
 
 
 @router.get("/exam/list")
-async def api_list_exams(institute: dict = Depends(get_current_institute)):
-    """Admin — list all exams for this institute"""
-    rows = await list_exams(institute_id=institute["id"])
+async def api_list_exams(request: Request, institute: dict = Depends(get_current_institute)):
+    """Admin/Teacher — list all exams for this institute"""
+    iid = await get_institute_id_from_request(request)
+    if not iid:
+        raise HTTPException(401, "Login required")
+    print(f"EXAM_LIST iid={iid} institute_id={institute.get('id')}", flush=True)
+    rows = await list_exams(institute_id=iid)
+    print(f"EXAM_LIST rows={len(rows)}", flush=True)
     return JSONResponse({"exams": safe_list(rows)})
 
 
@@ -270,7 +275,9 @@ async def api_bulk_create_students(
 @router.get("/student/list")
 async def api_list_students(request: Request, institute: dict = Depends(get_current_institute)):
     from app.services.db_service import database
-    iid = await get_institute_id_from_request(request) or institute["id"]
+    iid = await get_institute_id_from_request(request)
+    if not iid:
+        raise HTTPException(401, "Login required")
     try:
         await database.execute("ALTER TABLE students ADD COLUMN IF NOT EXISTS admission_date DATE")
     except: pass
@@ -528,10 +535,13 @@ async def api_public_exam_results(exam_id: int):
     return JSONResponse({"results": safe_list(rows)})
 
 @router.get("/results/{exam_id}")
-async def api_exam_results(exam_id: int, institute: dict = Depends(get_current_institute)):
-    """Admin — full results for an exam with batch info"""
+async def api_exam_results(exam_id: int, request: Request):
+    """Admin/Teacher — full results for an exam with batch info"""
     from app.services.db_service import database
-    exam = await get_exam(exam_id, institute_id=institute["id"])
+    iid = await get_institute_id_from_request(request)
+    if not iid:
+        raise HTTPException(401, "Login required")
+    exam = await get_exam(exam_id, institute_id=iid)
     if not exam:
         raise HTTPException(404, "Exam not found")
 
@@ -599,9 +609,12 @@ async def api_exam_results(exam_id: int, institute: dict = Depends(get_current_i
 
 
 @router.get("/results/{exam_id}/student/{access_id}")
-async def api_student_result_detail(exam_id: int, access_id: int, institute: dict = Depends(get_current_institute)):
-    """Admin — detailed result for one student including all answers"""
-    exam = await get_exam(exam_id, institute_id=institute["id"])
+async def api_student_result_detail(exam_id: int, access_id: int, request: Request):
+    """Admin/Teacher — detailed result for one student including all answers"""
+    iid = await get_institute_id_from_request(request)
+    if not iid:
+        raise HTTPException(401, "Login required")
+    exam = await get_exam(exam_id, institute_id=iid)
     if not exam:
         raise HTTPException(404, "Exam not found")
     result = await get_result(access_id)
@@ -663,7 +676,9 @@ async def api_create_batch(
 @router.get("/batch/list")
 async def api_list_batches(request: Request, institute: dict = Depends(get_current_institute)):
     from app.services.db_service import database
-    iid = await get_institute_id_from_request(request) or institute["id"]
+    iid = await get_institute_id_from_request(request)
+    if not iid:
+        raise HTTPException(401, "Login required")
     try:
         await database.execute("ALTER TABLE batches ADD COLUMN IF NOT EXISTS default_fee NUMERIC(10,2) DEFAULT 0")
     except: pass
@@ -1004,9 +1019,12 @@ async def api_unassign_batch(
 
 
 @router.get("/exam/{exam_id}/full")
-async def api_get_exam_full(exam_id: int, institute: dict = Depends(get_current_institute)):
+async def api_get_exam_full(exam_id: int, request: Request):
+    iid = await get_institute_id_from_request(request)
+    if not iid:
+        raise HTTPException(401, "Login required")
     """Get exam with all questions (including correct answers) + assigned batches"""
-    exam = await get_exam(exam_id, institute_id=institute["id"])
+    exam = await get_exam(exam_id, institute_id=iid)
     if not exam:
         raise HTTPException(404, "Exam not found")
     questions = await get_questions(exam_id)

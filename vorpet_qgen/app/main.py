@@ -356,7 +356,7 @@ Instructions:
 8. Return ONLY valid JSON, no explanation
 
 JSON format (write options in {lang_name}):
-{{"correct_value": "correct answer text", "option_a": "option text", "option_b": "option text", "option_c": "option text", "option_d": "option text", "correct_answer": "B"}}"""
+{{"correct_value": "correct answer text", "option_a": "option text", "option_b": "option text", "option_c": "option text", "option_d": "option text", "correct_answer": "A or B or C or D (randomly placed)"}}"""
 
     try:
         response = client.messages.create(
@@ -378,6 +378,17 @@ JSON format (write options in {lang_name}):
         correct = data.get("correct_answer", "A").strip().upper()
         if correct not in ("A","B","C","D"):
             correct = "A"
+        # Reshuffle options randomly so correct answer isn't always B
+        import random as _random
+        _cv = str(data.get("correct_value", data.get(f"option_{correct.lower()}",""))).strip()
+        _opts = [str(data.get("option_a","")), str(data.get("option_b","")), str(data.get("option_c","")), str(data.get("option_d",""))]
+        _random.shuffle(_opts)
+        try:
+            _new_pos = _opts.index(_cv)
+            correct = ["A","B","C","D"][_new_pos]
+        except ValueError:
+            pass
+        data["option_a"],data["option_b"],data["option_c"],data["option_d"] = _opts[0],_opts[1],_opts[2],_opts[3]
 
         # Cross-check: correct_answer must match correct_value
         correct_value = str(data.get("correct_value","")).strip()
