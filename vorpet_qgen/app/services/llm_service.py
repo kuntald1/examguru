@@ -229,6 +229,14 @@ Return ONLY this JSON:
                         q["attempt_instruction"] = get_attempt_phrase(language, q["attempt"])
                     if "section_label" not in q:
                         q["section_label"] = "A"
+        # Filter out empty/blank questions
+        for key in list(data.keys()):
+            if key.endswith("_questions"):
+                data[key] = [
+                    q for q in data[key]
+                    if q.get("question","").strip() and
+                       q.get("question","").strip() not in ["","question text","Edit raw text here..."]
+                ]
         return data
     except json.JSONDecodeError:
         return {

@@ -1124,9 +1124,9 @@ function QuestionEditorPage({ state, updateState, go }) {
             return (
               <div className="card" key={key}>
                 <div className="card-title" style={{justifyContent:"space-between",flexWrap:"wrap",gap:8}}>
-                  <span>📋 {state.examConfig?.language === "english" ? "Section" : "বিভাগ"}-{label}</span>
+                  <span>📋 {{"english":"Section","hindi":"खंड","bengali":"বিভাগ"}[state.examConfig?.language] || "Section"}-{{"english":String.fromCharCode(64+(si+1)),"hindi":["अ","ब","स","द","इ"][si]||String.fromCharCode(64+(si+1)),"bengali":["ক","খ","গ","ঘ","ঙ"][si]||"ক"}[state.examConfig?.language]||String.fromCharCode(64+(si+1))}</span>
                   <div style={{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap"}}>
-                    <span className={`badge ${sectionBadges[si%sectionBadges.length]}`}>{attempt} × {marks} {state.examConfig?.language === "english" ? "marks" : "নম্বর"}</span>
+                    <span className={`badge ${sectionBadges[si%sectionBadges.length]}`}>{attempt} × {marks} {state.examConfig?.language === "english" ? "marks" : ({"english":"marks","hindi":"अंक","bengali":"নম্বর"}[state.examConfig?.language] || "marks")}</span>
                     {needsAttempt && (
                       <span style={{background:"#F3E5F5",color:"#6A1B9A",border:"1px solid #CE93D8",borderRadius:20,padding:"2px 10px",fontSize:11,fontWeight:600}}>
                         {total}টি থেকে যেকোনো {attempt}টি
@@ -1144,7 +1144,7 @@ function QuestionEditorPage({ state, updateState, go }) {
                     <div className="q-header">
                       <div className="q-num" style={{background:color}}>{i+1}</div>
                       <div style={{fontSize:11,color:"var(--muted)",fontWeight:500}}>{marks}-mark question</div>
-                      <div className="q-marks">[{marks} {state.examConfig?.language === "english" ? "mark" : "নম্বর"}]</div>
+                      <div className="q-marks">[{marks} {state.examConfig?.language === "english" ? "mark" : ({"english":"marks","hindi":"अंक","bengali":"নম্বর"}[state.examConfig?.language] || "marks")}]</div>
                     </div>
                     <div style={{fontSize:13,color:"var(--text)",padding:"8px 10px",background:"var(--bg2)",borderRadius:8,marginBottom:6,border:"1px solid var(--border)",lineHeight:2,fontFamily:"var(--font)"}} dangerouslySetInnerHTML={{__html:displayMath(q.question)}}/>
                     <textarea value={q.question} onChange={e=>updateQ(key,i,e.target.value)} style={{fontFamily:"var(--font)",minHeight:marks>=5?100:70,fontSize:12,color:"var(--muted)"}} placeholder="Edit raw text here..."/>

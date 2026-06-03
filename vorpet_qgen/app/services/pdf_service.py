@@ -71,7 +71,7 @@ async def generate_pdf(questions: dict, school_name: str,
 
     print(f"PDF_SERVICE dur={duration_minutes}", flush=True)
     today  = datetime.date.today().strftime("%d/%m/%Y")
-    school = school_name or "বিদ্যালয়ের নাম"
+    school = school_name or "School Name"
 
     # Format duration nicely
     def format_duration(mins: int, lang: str) -> str:
@@ -134,7 +134,7 @@ async def generate_pdf(questions: dict, school_name: str,
                 ans_text = _convert_math(answer)
                 html += (
                     '<div class="answer">'
-                    '<span class="ans-label">উত্তর:</span> '
+                    '<span class="ans-label">' + {"bengali":"উত্তর","hindi":"उत्तर","english":"Answer"}.get(language,"Answer") + ":</span> "
                     + ans_text +
                     '</div>'
                 )
@@ -195,20 +195,24 @@ async def generate_pdf(questions: dict, school_name: str,
         sections_html += (
             '<div class="sec">'
             + sec_name + "-" + lbl
-            + '<span class="mbadge">' + str(attempt) + " × " + str(marks) + " " + marks_word + " (" + str(total_q) + "টি থেকে)</span>"
+            + '<span class="mbadge">' + str(attempt) + " × " + str(marks) + " " + marks_word + " (" + str(total_q) + {
+    "bengali": "টি থেকে",
+    "hindi": " में से",
+    "english": " to attempt",
+}.get(language, " to attempt") + ")</span>"
             + '</div>'
         )
         if attempt_instr:
             sections_html += '<div class="attempt-instr">✏ ' + attempt_instr + '</div>'
         sections_html += q_block(qlist, marks)
-        sections_html += '<div class="total">' + sec_name + "-" + lbl + " মোট = " + str(sec_total) + '</div>'
+        sections_html += '<div class="total">' + sec_name + "-" + lbl + " " + {"bengali":"মোট","hindi":"कुल","english":"Total"}.get(language,"Total") + " = " + str(sec_total) + '</div>'
 
     # Check if this is an answer key
     has_answers = any(
         any(q.get("answer") for q in questions.get(k, []))
         for k in questions
     )
-    answer_key_label = " — উত্তরপত্র (শিক্ষকের জন্য)" if has_answers else ""
+    answer_key_label = " — " + {"bengali":"উত্তরপত্র (শিক্ষকের জন্য)","hindi":"उत्तर पत्र (शिक्षक के लिए)","english":"Answer Key (Teacher's Copy)"}.get(language,"Answer Key (Teacher's Copy)") if has_answers else ""
 
     html = (
         '<!DOCTYPE html><html><head><meta charset="UTF-8">'
@@ -218,15 +222,19 @@ async def generate_pdf(questions: dict, school_name: str,
         '<div class="school">' + school + '</div>'
         '<div class="exam">' + subject + ' — ' + exam_word + answer_key_label + '</div>'
         '<div class="meta">'
-        '<span>শ্রেণি: ' + class_name + '</span>'
-        '<span>তারিখ: ' + today + '</span>'
-        '<span>পূর্ণমান: ' + str(total) + '</span>'
-        '<span>সময়: ' + time_str + '</span>'
+        '<span>' + {"bengali":"শ্রেণি","hindi":"कक्षा","english":"Class"}.get(language,"Class") + ': ' + class_name + '</span>'
+        '<span>' + {"bengali":"তারিখ","hindi":"दिनांक","english":"Date"}.get(language,"Date") + ': ' + today + '</span>'
+        '<span>' + {"bengali":"পূর্ণমান","hindi":"पूर्णांक","english":"Marks"}.get(language,"Marks") + ': ' + str(total) + '</span>'
+        '<span>' + {"bengali":"সময়","hindi":"समय","english":"Time"}.get(language,"Time") + ': ' + time_str + '</span>'
         '</div></div>'
-        '<div class="instr">নির্দেশাবলী: ' + instr_line + '</div>'
+        '<div class="instr">' + {
+    "bengali": "নির্দেশাবলী",
+    "hindi": "निर्देश",
+    "english": "Instructions",
+}.get(language, "Instructions") + ": " + instr_line + '</div>'
         + sections_html +
-        '<div class="total">সর্বমোট = ' + str(total) + '</div>'
-        '<div class="footer">Vorpet AI — প্রশ্নপত্র জেনারেটর | vorpet.com</div>'
+        '<div class="total">' + {"bengali":"সর্বমোট","hindi":"कुल योग","english":"Grand Total"}.get(language,"Grand Total") + " = " + str(total) + '</div>'
+        '<div class="footer">Vorpet AI — ' + {"bengali":"প্রশ্নপত্র জেনারেটর","hindi":"प्रश्न पत्र जनरेटर","english":"Question Paper Generator"}.get(language,"Question Paper Generator") + ' | vorpet.com</div>'
         '</body></html>'
     )
 
